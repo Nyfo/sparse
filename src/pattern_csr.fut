@@ -30,4 +30,21 @@ def csr_bipartite_from_pattern [m][n] (pat:[m][n]bool)
   let cols = csr_cols_from_pattern pat
   in (rows, cols)
 
+-- Reference version: loop-based CSR:
+def csr_rows_from_pattern_loop [m][n] (pat:[m][n]bool) : ([m+1]i64, []i64) =
+  let counts : [m]i64 = map count_true pat
+  let offs   : [m+1]i64 = counts_to_offs counts
+  let nnz : i64 = offs[m]
+  let idx = replicate nnz 0i64
+  let i   = 0i64
 
+  let (idx, _i) =
+    loop (idx, i)
+    while i < m do
+      let cols : []i64 = filter (\j -> pat[i][j]) (iota n)
+      let start : i64 = offs[i]
+      let len   : i64 = length cols
+      let idx' = idx with [start : start + len] = cols
+      in (idx', i + 1i64)
+
+  in (offs, idx)

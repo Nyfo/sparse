@@ -1,6 +1,6 @@
 -- Tests for CSR construction
 
-module CSR = import "../src/pattern_bipartite"
+module CSR = import "../src/pattern_csr"
 
 def eq_bool_mat [m][n] (a:[m][n]bool) (b:[m][n]bool) : bool =
   reduce (&&) true

@@ -1,6 +1,6 @@
 -- Tests for Partial D2 coloring
 
-module CSR = import "../src/pattern_bipartite"
+module CSR = import "../src/pattern_csr"
 module Col = import "../src/partial_d2_coloring"
 
 def neigh (offs:[]i64) (idx:[]i64) (v:i64) : []i64 =
