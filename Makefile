@@ -37,7 +37,8 @@ clean:
 	      test/test_pattern_csr \
 	      test/test_partial_d2_coloring \
 	      test/test_sparse_jacobian_jvp \
-	      test/test_sparse_jacobian_vjp
+	      test/test_sparse_jacobian_vjp \
+		  test/test_bgpc_vv_coloring
 	rm -f benchmark/bench_dense_jacobian \
 	      benchmark/bench_sparse_pipeline \
 	      benchmark/bench_sparse_jvp \

@@ -25,7 +25,7 @@ entry mk_banded_test_with_row_colors (m:i64) (n:i64)
 entry bench_sparse_vjp_banded5_total (m:i64) (n:i64)
   (pat:[m][n]bool) (rows:[m]i64) (x:[n]f64)
   : [m][n]f64 =
-  Sparse.jac_compressed_vjp (\x0 -> Cases.f_banded5 rows x0) pat x
+  Sparse.jac_vjp_dense (\x0 -> Cases.f_banded5 rows x0) pat x
 
 -- ==
 -- entry: bench_sparse_vjp_banded5_precolored
@@ -35,5 +35,5 @@ entry bench_sparse_vjp_banded5_total (m:i64) (n:i64)
 entry bench_sparse_vjp_banded5_precolored (m:i64) (n:i64)
   (pat:[m][n]bool) (row_colors:[m]i64) (rows:[m]i64) (x:[n]f64)
   : [m][n]f64 =
-  Sparse.jac_compressed_vjp_with_row_colors
+  Sparse.jac_vjp_dense_with_row_colors
     (\x0 -> Cases.f_banded5 rows x0) pat row_colors x

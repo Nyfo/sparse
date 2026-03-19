@@ -33,7 +33,7 @@ def pat_ex1 : [3][5]bool =
 entry test_sparse_jvp_ex1_matches_dense (x:[5]f64) : bool =
   let eps = 1e-9f64
   let jd = mask_with_pattern pat_ex1 (Dense.jac_dense_jvp f_ex1 x)
-  let js = Sparse.jac_compressed_jvp f_ex1 pat_ex1 x
+  let js = Sparse.jac_jvp_dense f_ex1 pat_ex1 x
   in approx_eq_mat js jd eps
 
 -- Example 2
@@ -54,5 +54,5 @@ def pat_ex2 : [2][4]bool =
 entry test_sparse_jvp_ex2_matches_dense (x:[4]f64) : bool =
   let eps = 1e-9f64
   let jd = mask_with_pattern pat_ex2 (Dense.jac_dense_jvp f_ex2 x)
-  let js = Sparse.jac_compressed_jvp f_ex2 pat_ex2 x
+  let js = Sparse.jac_jvp_dense f_ex2 pat_ex2 x
   in approx_eq_mat js jd eps

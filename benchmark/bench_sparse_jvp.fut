@@ -25,7 +25,7 @@ entry mk_banded_test_with_colors (m:i64) (n:i64)
 entry bench_sparse_jvp_banded5_total (m:i64) (n:i64)
   (pat:[m][n]bool) (rows:[m]i64) (x:[n]f64)
   : [m][n]f64 =
-  Sparse.jac_compressed_jvp (\x0 -> Cases.f_banded5 rows x0) pat x
+  Sparse.jac_jvp_dense (\x0 -> Cases.f_banded5 rows x0) pat x
 
 -- ==
 -- entry: bench_sparse_jvp_banded5_precolored
@@ -35,4 +35,38 @@ entry bench_sparse_jvp_banded5_total (m:i64) (n:i64)
 entry bench_sparse_jvp_banded5_precolored (m:i64) (n:i64)
   (pat:[m][n]bool) (colors:[n]i64) (rows:[m]i64) (x:[n]f64)
   : [m][n]f64 =
-  Sparse.jac_compressed_jvp_with_colors (\x0 -> Cases.f_banded5 rows x0) pat colors x
+  Sparse.jac_jvp_dense_with_colors (\x0 -> Cases.f_banded5 rows x0) pat colors x
+
+-- section: Dataset generators for stencil
+
+entry mk_stencil_test (h:i64) (w:i64)
+  : (i64, i64, [h*w][h*w]bool, [h*w]f64) =
+  let (pat, x) = Cases.mk_stencil_inputs h w
+  in (h, w, pat, x)
+
+entry mk_stencil_test_with_colors (h:i64) (w:i64)
+  : (i64, i64, [h*w][h*w]bool, [h*w]i64, [h*w]f64) =
+  let (pat, colors, x) = Cases.mk_stencil_inputs_with_colors h w
+  in (h, w, pat, colors, x)
+
+-- section: Sparse JVP on stencil
+
+-- ==
+-- entry: bench_sparse_jvp_stencil_total
+-- script input { mk_stencil_test 16 16 }
+-- script input { mk_stencil_test 32 32 }
+-- script input { mk_stencil_test 64 64 }
+entry bench_sparse_jvp_stencil_total (h:i64) (w:i64)
+  (pat:[h*w][h*w]bool) (x:[h*w]f64)
+  : [h*w][h*w]f64 =
+  Sparse.jac_jvp_dense (\x0 -> Cases.stencil2d x0) pat x
+
+-- ==
+-- entry: bench_sparse_jvp_stencil_precolored
+-- script input { mk_stencil_test_with_colors 16 16 }
+-- script input { mk_stencil_test_with_colors 32 32 }
+-- script input { mk_stencil_test_with_colors 64 64 }
+entry bench_sparse_jvp_stencil_precolored (h:i64) (w:i64)
+  (pat:[h*w][h*w]bool) (colors:[h*w]i64) (x:[h*w]f64)
+  : [h*w][h*w]f64 =
+  Sparse.jac_jvp_dense_with_colors (\x0 -> Cases.stencil2d x0) pat colors x
