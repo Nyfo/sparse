@@ -7,8 +7,7 @@
 --   3) dense Jacobian
 
 module CSR = import "./pattern_csr"
-module Col = import "./partial_d2_coloring"
--- module Col = import "./bgpc_vv_coloring"
+module Col = import "./bgpc_vv_coloring"
 
 def num_colors_of [m] (row_colors: [m]i64) : i64 =
   if m == 0 then 0i64
@@ -83,7 +82,7 @@ def jac_vjp_compressed [m][n]
     CSR.csr_bipartite_from_pattern pat
 
   let row_colors =
-    Col.partial_d2_color_rows row_offs row_idx col_offs col_idx
+    Col.vv_color_rows row_offs row_idx col_offs col_idx
 
   let ys = compressed_ys_vjp f row_colors x
 
@@ -148,3 +147,4 @@ def jac_vjp_dense_with_row_colors [m][n]
   let (row_offs, row_idx, vals) =
     jac_vjp_csr_with_row_colors f pat row_colors x
   in csr_to_dense row_offs row_idx vals
+
