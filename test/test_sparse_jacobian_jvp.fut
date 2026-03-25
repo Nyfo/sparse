@@ -139,3 +139,4 @@ entry test_sparse_jvp_ex5_matches_dense (x:[5]f64) : bool =
   let jd = mask_with_pattern pat_ex5 (Dense.jac_dense_jvp f_ex5 x)
   let js = Sparse.jac_jvp_dense f_ex5 pat_ex5 x
   in approx_eq_mat js jd eps
+
