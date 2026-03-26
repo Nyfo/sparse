@@ -4,10 +4,32 @@
 -- This family is designed to give the GPU-oriented BGPC coloring a
 -- better chance than the very regular banded/stencil cases.
 
+module Dense = import "../src/dense_jacobian"
 module Sparse = import "../src/sparse_jacobian_jvp"
 module BGPC = import "../src/bgpc_vv_coloring"
 module D2 = import "../src/partial_d2_coloring"
 module Cases = import "./bench_cases"
+
+def dense_to_csr_vals [m][n]
+  (row_offs:[m+1]i64)
+  (row_idx:[]i64)
+  (j:[m][n]f64)
+  : []f64 =
+  let nnz = length row_idx
+  let vals0 = replicate nnz 0.0f64
+
+  let (vals_final, _i) =
+    loop (vals, i) = (vals0, 0i64)
+    while i < m do
+      let s = row_offs[i]
+      let e = row_offs[i+1]
+      let cols = row_idx[s:e]
+      let jrow = j[i]
+      let seg = map (\col -> jrow[col]) cols
+      let vals' = vals with [s:e] = seg
+      in (vals', i + 1i64)
+
+  in vals_final
 
 def f_spiky [m][n]
   (row_offs:[m+1]i64) (row_idx:[]i64)
@@ -46,11 +68,28 @@ entry mk_spiky_csr_test
   in (m, n, small_deg, big_deg, num_big_rows,
       row_offs, row_idx, col_offs, col_idx, x)
 
+-- Dense sizes stop at the largest cases that still look plausibly
+-- runnable on a large GPU. Larger dense Jacobians are likely to hit
+-- memory limits before the sparse variants do.
+-- ==
+-- entry: bench_dense_jvp_to_csr_spiky
+-- script input { mk_spiky_csr_test 8192 131072 5 256 64 }
+-- script input { mk_spiky_csr_test 16384 262144 5 512 128 }
+entry bench_dense_jvp_to_csr_spiky
+  (m:i64) (n:i64) (_small_deg:i64) (_big_deg:i64) (_num_big_rows:i64)
+  (row_offs:[m+1]i64) (row_idx:[]i64)
+  (_col_offs:[n+1]i64) (_col_idx:[]i64)
+  (x:[n]f64)
+  : []f64 =
+  let j = Dense.jac_dense_jvp (f_spiky row_offs row_idx) x
+  in dense_to_csr_vals row_offs row_idx j
+
 -- ==
 -- entry: bench_sparse_jvp_to_csr_spiky_bgpc
 -- script input { mk_spiky_csr_test 8192 131072 5 256 64 }
 -- script input { mk_spiky_csr_test 16384 262144 5 512 128 }
 -- script input { mk_spiky_csr_test 32768 524288 5 1024 256 }
+-- script input { mk_spiky_csr_test 40960 655360 5 1280 320 }
 entry bench_sparse_jvp_to_csr_spiky_bgpc
   (m:i64) (n:i64) (_small_deg:i64) (_big_deg:i64) (_num_big_rows:i64)
   (row_offs:[m+1]i64) (row_idx:[]i64)
@@ -66,6 +105,7 @@ entry bench_sparse_jvp_to_csr_spiky_bgpc
 -- script input { mk_spiky_csr_test 8192 131072 5 256 64 }
 -- script input { mk_spiky_csr_test 16384 262144 5 512 128 }
 -- script input { mk_spiky_csr_test 32768 524288 5 1024 256 }
+-- script input { mk_spiky_csr_test 40960 655360 5 1280 320 }
 entry bench_sparse_jvp_to_csr_spiky_d2
   (m:i64) (n:i64) (_small_deg:i64) (_big_deg:i64) (_num_big_rows:i64)
   (row_offs:[m+1]i64) (row_idx:[]i64)
