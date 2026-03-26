@@ -42,4 +42,6 @@ clean:
 	rm -f benchmark/bench_dense_jacobian \
 	      benchmark/bench_sparse_pipeline \
 	      benchmark/bench_sparse_jvp \
-	      benchmark/bench_sparse_vjp
+	      benchmark/bench_sparse_vjp \
+		  benchmark/bench_jvp_csr_fair \
+		  benchmark/bench_jvp_csr_spiky

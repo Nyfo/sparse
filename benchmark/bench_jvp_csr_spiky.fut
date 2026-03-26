@@ -68,37 +68,37 @@ entry mk_spiky_csr_test
   in (m, n, small_deg, big_deg, num_big_rows,
       row_offs, row_idx, col_offs, col_idx, x)
 
--- Dense sizes stop at the largest cases that still look plausibly
--- runnable on a large GPU. Larger dense Jacobians are likely to hit
--- memory limits before the sparse variants do.
--- ==
--- entry: bench_dense_jvp_to_csr_spiky
--- script input { mk_spiky_csr_test 8192 131072 5 256 64 }
--- script input { mk_spiky_csr_test 16384 262144 5 512 128 }
-entry bench_dense_jvp_to_csr_spiky
-  (m:i64) (n:i64) (_small_deg:i64) (_big_deg:i64) (_num_big_rows:i64)
-  (row_offs:[m+1]i64) (row_idx:[]i64)
-  (_col_offs:[n+1]i64) (_col_idx:[]i64)
-  (x:[n]f64)
-  : []f64 =
-  let j = Dense.jac_dense_jvp (f_spiky row_offs row_idx) x
-  in dense_to_csr_vals row_offs row_idx j
+-- -- Dense sizes stop at the largest cases that still look plausibly
+-- -- runnable on a large GPU. Larger dense Jacobians are likely to hit
+-- -- memory limits before the sparse variants do.
+-- -- ==
+-- -- entry: bench_dense_jvp_to_csr_spiky
+-- -- script input { mk_spiky_csr_test 2048 32768 5 256 64 }
+-- -- script input { mk_spiky_csr_test 3072 49152 5 512 128 }
+-- entry bench_dense_jvp_to_csr_spiky
+--   (m:i64) (n:i64) (_small_deg:i64) (_big_deg:i64) (_num_big_rows:i64)
+--   (row_offs:[m+1]i64) (row_idx:[]i64)
+--   (_col_offs:[n+1]i64) (_col_idx:[]i64)
+--   (x:[n]f64)
+--   : []f64 =
+--   let j = Dense.jac_dense_jvp (f_spiky row_offs row_idx) x
+--   in dense_to_csr_vals row_offs row_idx j
 
--- ==
--- entry: bench_sparse_jvp_to_csr_spiky_bgpc
--- script input { mk_spiky_csr_test 8192 131072 5 256 64 }
--- script input { mk_spiky_csr_test 16384 262144 5 512 128 }
--- script input { mk_spiky_csr_test 32768 524288 5 1024 256 }
--- script input { mk_spiky_csr_test 40960 655360 5 1280 320 }
-entry bench_sparse_jvp_to_csr_spiky_bgpc
-  (m:i64) (n:i64) (_small_deg:i64) (_big_deg:i64) (_num_big_rows:i64)
-  (row_offs:[m+1]i64) (row_idx:[]i64)
-  (col_offs:[n+1]i64) (col_idx:[]i64)
-  (x:[n]f64)
-  : []f64 =
-  let colors = BGPC.vv_color_cols row_offs row_idx col_offs col_idx
-  let ys = Sparse.compressed_ys_jvp (f_spiky row_offs row_idx) colors x
-  in Sparse.compressed_to_csr_vals row_offs row_idx colors ys
+-- -- ==
+-- -- entry: bench_sparse_jvp_to_csr_spiky_bgpc
+-- -- script input { mk_spiky_csr_test 8192 131072 5 256 64 }
+-- -- script input { mk_spiky_csr_test 16384 262144 5 512 128 }
+-- -- script input { mk_spiky_csr_test 32768 524288 5 1024 256 }
+-- -- script input { mk_spiky_csr_test 40960 655360 5 1280 320 }
+-- entry bench_sparse_jvp_to_csr_spiky_bgpc
+--   (m:i64) (n:i64) (_small_deg:i64) (_big_deg:i64) (_num_big_rows:i64)
+--   (row_offs:[m+1]i64) (row_idx:[]i64)
+--   (col_offs:[n+1]i64) (col_idx:[]i64)
+--   (x:[n]f64)
+--   : []f64 =
+--   let colors = BGPC.vv_color_cols row_offs row_idx col_offs col_idx
+--   let ys = Sparse.compressed_ys_jvp (f_spiky row_offs row_idx) colors x
+--   in Sparse.compressed_to_csr_vals row_offs row_idx colors ys
 
 -- ==
 -- entry: bench_sparse_jvp_to_csr_spiky_d2
