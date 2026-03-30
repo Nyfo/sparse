@@ -1,1 +1,33 @@
+Compiling benchmark/bench_vjp_structured.fut...
+Reporting arithmetic mean runtime of at least 10 runs for each dataset (min 0.5s).
+More runs automatically performed for up to 300s to ensure accurate measurement.
 
+benchmark/bench_vjp_structured.fut:bench_dense_vjp_to_csr_banded5 (no tuning file):
+mk_banded_csr_test 512i32 16384i32:       24045μs (95% CI: [   23994.0,    24127.8])
+mk_banded_csr_test 1024i32 32768i32:      63715μs (95% CI: [   63213.1,    64386.5])
+mk_banded_csr_test 2048i32 65536i32:     259716μs (95% CI: [  258573.4,   260809.2])
+
+benchmark/bench_vjp_structured.fut:bench_sparse_vjp_to_csr_banded5_bgpc (no tuning file):
+mk_banded_csr_test 512i32 16384i32:          84μs (95% CI: [      83.7,       84.0])
+mk_banded_csr_test 1024i32 32768i32:        166μs (95% CI: [     165.6,      166.5])
+mk_banded_csr_test 2048i32 65536i32:        184μs (95% CI: [     183.8,      184.2])
+
+benchmark/bench_vjp_structured.fut:bench_sparse_vjp_to_csr_banded5_d2 (no tuning file):
+mk_banded_csr_test 512i32 16384i32:          46μs (95% CI: [      45.3,       46.3])
+mk_banded_csr_test 1024i32 32768i32:         67μs (95% CI: [      66.6,       66.7])
+mk_banded_csr_test 2048i32 65536i32:        125μs (95% CI: [     124.4,      124.7])
+
+benchmark/bench_vjp_structured.fut:bench_dense_vjp_to_csr_stencil (no tuning file):
+mk_stencil_csr_test 64i32 64i32:         238998μs (95% CI: [  212789.8,   278287.9])
+mk_stencil_csr_test 96i32 96i32:         992295μs (95% CI: [  990361.1,   993730.9])
+mk_stencil_csr_test 128i32 128i32:      3230694μs (95% CI: [ 3122712.1,  3501970.9])
+
+benchmark/bench_vjp_structured.fut:bench_sparse_vjp_to_csr_stencil_bgpc (no tuning file):
+mk_stencil_csr_test 64i32 64i32:          28815μs (95% CI: [   28781.6,    28865.4])
+mk_stencil_csr_test 96i32 96i32:         220198μs (95% CI: [  219604.3,   221566.9])
+mk_stencil_csr_test 128i32 128i32:       691392μs (95% CI: [  687587.3,   693130.8])
+
+benchmark/bench_vjp_structured.fut:bench_sparse_vjp_to_csr_stencil_d2 (no tuning file):
+mk_stencil_csr_test 64i32 64i32:           1166μs (95% CI: [    1165.9,     1167.0])
+mk_stencil_csr_test 96i32 96i32:           1295μs (95% CI: [    1294.4,     1295.1])
+mk_stencil_csr_test 128i32 128i32:         2697μs (95% CI: [    2696.0,     2697.2])

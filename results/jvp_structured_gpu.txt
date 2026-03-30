@@ -1,1 +1,23 @@
+Compiling benchmark/bench_jvp_structured.fut...
+Reporting arithmetic mean runtime of at least 10 runs for each dataset (min 0.5s).
+More runs automatically performed for up to 300s to ensure accurate measurement.
 
+benchmark/bench_jvp_structured.fut:bench_dense_jvp_to_csr_banded5 (no tuning file):
+mk_banded_csr_test 512i32 16384i32:       27141μs (95% CI: [   26932.5,    27384.6])
+mk_banded_csr_test 1024i32 32768i32:      88736μs (95% CI: [   63587.9,   130659.8])
+mk_banded_csr_test 2048i32 65536i32:     243832μs (95% CI: [  194979.9,   301179.2])
+
+benchmark/bench_jvp_structured.fut:bench_sparse_jvp_to_csr_banded5_bgpc (no tuning file):
+mk_banded_csr_test 512i32 16384i32:       20489μs (95% CI: [   20442.2,    20545.8])
+mk_banded_csr_test 1024i32 32768i32:      84395μs (95% CI: [   56892.0,   129079.7])
+mk_banded_csr_test 2048i32 65536i32:     121095μs (95% CI: [   88921.2,   202539.4])
+
+benchmark/bench_jvp_structured.fut:bench_dense_jvp_to_csr_stencil (no tuning file):
+mk_stencil_csr_test 64i32 64i32:         272088μs (95% CI: [  204657.7,   382286.4])
+mk_stencil_csr_test 96i32 96i32:         550392μs (95% CI: [  443335.7,   673506.0])
+mk_stencil_csr_test 128i32 128i32:      1050194μs (95% CI: [  930983.9,  1159832.1])
+
+benchmark/bench_jvp_structured.fut:bench_sparse_jvp_to_csr_stencil_bgpc (no tuning file):
+mk_stencil_csr_test 64i32 64i32:         274273μs (95% CI: [  208525.1,   393691.2])
+mk_stencil_csr_test 96i32 96i32:         718074μs (95% CI: [  593690.0,   849281.3])
+mk_stencil_csr_test 128i32 128i32:      1309648μs (95% CI: [ 1284546.6,  1381237.0])
