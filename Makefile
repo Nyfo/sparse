@@ -19,16 +19,16 @@ test-gpu:
 # section: benches (C backend)
 bench:
 	futhark bench benchmark/bench_dense_jacobian.fut
-	futhark bench benchmark/bench_sparse_pipeline.fut
-	futhark bench benchmark/bench_sparse_jvp.fut
-	futhark bench benchmark/bench_sparse_vjp.fut
+	futhark bench benchmark/bench_jvp_structured.fut
+	futhark bench benchmark/bench_vjp_structured.fut
+	futhark bench benchmark/bench_jvp_spiky.fut
 
 # section: benches (CUDA backend)
 bench-gpu:
 	futhark bench --backend=cuda benchmark/bench_dense_jacobian.fut
-	futhark bench --backend=cuda benchmark/bench_sparse_pipeline.fut
-	futhark bench --backend=cuda benchmark/bench_sparse_jvp.fut
-	futhark bench --backend=cuda benchmark/bench_sparse_vjp.fut
+	futhark bench --backend=cuda benchmark/bench_jvp_structured.fut
+	futhark bench --backend=cuda benchmark/bench_vjp_structured.fut
+	futhark bench --backend=cuda benchmark/bench_jvp_spiky.fut
 
 # section: cleanup
 clean:
@@ -40,8 +40,6 @@ clean:
 	      test/test_sparse_jacobian_vjp \
 		  test/test_bgpc_vv_coloring
 	rm -f benchmark/bench_dense_jacobian \
-	      benchmark/bench_sparse_pipeline \
-	      benchmark/bench_sparse_jvp \
-	      benchmark/bench_sparse_vjp \
-		  benchmark/bench_jvp_csr_fair \
-		  benchmark/bench_jvp_csr_spiky
+	      benchmark/bench_jvp_structured \
+	      benchmark/bench_vjp_structured \
+	      benchmark/bench_jvp_spiky
