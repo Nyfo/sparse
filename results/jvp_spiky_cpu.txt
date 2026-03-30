@@ -1,1 +1,11 @@
+Compiling benchmark/bench_jvp_spiky.fut...
+Reporting arithmetic mean runtime of at least 10 runs for each dataset (min 0.5s).
+More runs automatically performed for up to 300s to ensure accurate measurement.
 
+benchmark/bench_jvp_spiky.fut:bench_sparse_jvp_to_csr_spiky_d2 (no tuning file):
+mk_spiky_csr_test 8192i32 131072i32 5i32 256i32 64i32:     670746μs (95% CI: [  669449.5,   671986.1])
+mk_spiky_csr_test 16384i32 262144i32 5i32 512i32 128i32:    4057771μs (95% CI: [ 3973331.9,  4385711.1])
+
+benchmark/bench_jvp_spiky.fut:bench_color_spiky_d2 (no tuning file):
+mk_spiky_csr_test 8192i32 131072i32 5i32 256i32 64i32:      11884μs (95% CI: [   11858.6,    11916.4])
+mk_spiky_csr_test 16384i32 262144i32 5i32 512i32 128i32:      74873μs (95% CI: [   74732.9,    75097.6])
