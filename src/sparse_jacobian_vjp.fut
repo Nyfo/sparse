@@ -148,3 +148,4 @@ def jac_vjp_dense_with_row_colors [m][n]
     jac_vjp_csr_with_row_colors f pat row_colors x
   in csr_to_dense row_offs row_idx vals
 
+
