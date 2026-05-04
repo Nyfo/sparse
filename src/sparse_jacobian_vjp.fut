@@ -69,6 +69,55 @@ def csr_to_dense [m][n]
         in scatter row0 cols vs)
       (iota m)
 
+
+-- --------------------- Prepared VJP pipeline ---------------------
+
+-- Precompute everything that only depends on the sparsity pattern.
+def prepare_vjp [m][n]
+  (pat: [m][n]bool)
+  =
+  let ((row_offs, row_idx), (col_offs, col_idx)) =
+    CSR.csr_bipartite_from_pattern pat
+
+  let row_colors =
+    Col.vv_color_rows row_offs row_idx col_offs col_idx
+
+  in (row_offs, row_idx, col_offs, col_idx, row_colors)
+
+-- Return the compressed representation using prepared structure/coloring.
+def eval_prepared_vjp_compressed [m][n]
+  (f: [n]f64 -> [m]f64)
+  (prepared: ([m+1]i64, []i64, [n+1]i64, []i64, [m]i64))
+  (x: [n]f64)
+  =
+  let (row_offs, row_idx, col_offs, col_idx, row_colors) = prepared
+  let ys = compressed_ys_vjp f row_colors x
+  in ((row_offs, row_idx), (col_offs, col_idx), row_colors, ys)
+
+-- Return the sparse Jacobian in CSR format using prepared structure/coloring.
+def eval_prepared_vjp_csr [m][n]
+  (f: [n]f64 -> [m]f64)
+  (prepared: ([m+1]i64, []i64, [n+1]i64, []i64, [m]i64))
+  (x: [n]f64)
+  =
+  let (row_offs, row_idx, _col_offs, _col_idx, row_colors) = prepared
+  let ys = compressed_ys_vjp f row_colors x
+  let vals = compressed_to_csr_vals row_offs row_idx row_colors ys
+  in (row_offs, row_idx, vals)
+
+-- Return a dense Jacobian using prepared structure/coloring.
+def eval_prepared_vjp_dense [m][n]
+  (f: [n]f64 -> [m]f64)
+  (prepared: ([m+1]i64, []i64, [n+1]i64, []i64, [m]i64))
+  (x: [n]f64)
+  : [m][n]f64 =
+  let (row_offs, row_idx, vals) =
+    eval_prepared_vjp_csr f prepared x
+  in csr_to_dense row_offs row_idx vals
+
+
+-- -------------- Full VJP pipeline from a sparsity pattern --------------
+
 -- Compressed output:
 -- Returns:
 --   ((row_offs,row_idx), (col_offs,col_idx), row_colors, ys)
@@ -78,15 +127,30 @@ def jac_vjp_compressed [m][n]
   (f: [n]f64 -> [m]f64)
   (pat: [m][n]bool)
   (x: [n]f64) =
-  let ((row_offs, row_idx), (col_offs, col_idx)) =
-    CSR.csr_bipartite_from_pattern pat
+  let prepared = prepare_vjp pat
+  in eval_prepared_vjp_compressed f prepared x
 
-  let row_colors =
-    Col.vv_color_rows row_offs row_idx col_offs col_idx
+-- Sparse / CSR output:
+-- Returns the Jacobian in CSR format:
+--   (row_offs, row_idx, vals)
+def jac_vjp_csr [m][n]
+  (f: [n]f64 -> [m]f64)
+  (pat: [m][n]bool)
+  (x: [n]f64) =
+  let prepared = prepare_vjp pat
+  in eval_prepared_vjp_csr f prepared x
 
-  let ys = compressed_ys_vjp f row_colors x
+-- Dense output:
+def jac_vjp_dense [m][n]
+  (f: [n]f64 -> [m]f64)
+  (pat: [m][n]bool)
+  (x: [n]f64)
+  : [m][n]f64 =
+  let prepared = prepare_vjp pat
+  in eval_prepared_vjp_dense f prepared x
 
-  in ((row_offs, row_idx), (col_offs, col_idx), row_colors, ys)
+
+-- -------------- Wrappers with precomputed row colors --------------
 
 -- Like jac_vjp_compressed, but assumes row colors are already computed.
 def jac_vjp_compressed_with_row_colors [m][n]
@@ -101,19 +165,6 @@ def jac_vjp_compressed_with_row_colors [m][n]
 
   in ((row_offs, row_idx), (col_offs, col_idx), row_colors, ys)
 
--- Sparse / CSR output:
--- Returns the Jacobian in CSR format:
---   (row_offs, row_idx, vals)
-def jac_vjp_csr [m][n]
-  (f: [n]f64 -> [m]f64)
-  (pat: [m][n]bool)
-  (x: [n]f64) =
-  let ((row_offs, row_idx), (_col_offs, _col_idx), row_colors, ys) =
-    jac_vjp_compressed f pat x
-
-  let vals = compressed_to_csr_vals row_offs row_idx row_colors ys
-  in (row_offs, row_idx, vals)
-
 -- Like jac_vjp_csr, but assumes row colors are already computed.
 def jac_vjp_csr_with_row_colors [m][n]
   (f: [n]f64 -> [m]f64)
@@ -125,17 +176,6 @@ def jac_vjp_csr_with_row_colors [m][n]
 
   let vals = compressed_to_csr_vals row_offs row_idx row_colors ys
   in (row_offs, row_idx, vals)
-
-
--- Dense output:
-def jac_vjp_dense [m][n]
-  (f: [n]f64 -> [m]f64)
-  (pat: [m][n]bool)
-  (x: [n]f64)
-  : [m][n]f64 =
-  let (row_offs, row_idx, vals) =
-    jac_vjp_csr f pat x
-  in csr_to_dense row_offs row_idx vals
 
 -- Like jac_vjp_dense, but assumes row colors are already computed
 def jac_vjp_dense_with_row_colors [m][n]

@@ -140,3 +140,39 @@ entry test_sparse_jvp_ex5_matches_dense (x:[5]f64) : bool =
   let js = Sparse.jac_jvp_dense f_ex5 pat_ex5 x
   in approx_eq_mat js jd eps
 
+
+-- ==
+-- entry: test_prepared_jvp_ex4_matches_dense
+-- input  { [1.5f64, -2.0f64, 0.5f64, 7.0f64, 3.0f64, -4.0f64] }
+-- output { true }
+entry test_prepared_jvp_ex4_matches_dense (x:[6]f64) : bool =
+  let eps = 1e-9f64
+  let jd = mask_with_pattern pat_ex4 (Dense.jac_dense_jvp f_ex4 x)
+  let prepared = Sparse.prepare_jvp pat_ex4
+  let js = Sparse.eval_prepared_jvp_dense f_ex4 prepared x
+  in approx_eq_mat js jd eps
+
+
+-- ==
+-- entry: test_prepared_jvp_reuse_two_points
+-- input  { [1.5f64, -2.0f64, 0.5f64, 7.0f64, 3.0f64, -4.0f64] }
+-- output { true }
+entry test_prepared_jvp_reuse_two_points (x1:[6]f64) : bool =
+  let eps = 1e-9f64
+
+  let x2 = [0.25f64, 1.0f64, -3.0f64, 2.0f64, -1.5f64, 0.75f64]
+
+  let prepared = Sparse.prepare_jvp pat_ex4
+
+  let jd1 = mask_with_pattern pat_ex4 (Dense.jac_dense_jvp f_ex4 x1)
+  let js1 = Sparse.eval_prepared_jvp_dense f_ex4 prepared x1
+
+  let jd2 = mask_with_pattern pat_ex4 (Dense.jac_dense_jvp f_ex4 x2)
+  let js2 = Sparse.eval_prepared_jvp_dense f_ex4 prepared x2
+
+  in approx_eq_mat js1 jd1 eps && approx_eq_mat js2 jd2 eps
+
+
+
+
+
