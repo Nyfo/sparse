@@ -8,14 +8,16 @@ def num_colors_of [k] (colors: [k]i64) : i64 =
   if k == 0 then 0i64
   else 1i64 + reduce i64.max 0i64 colors
 
--- Computes both column and row colorings from the sparsity pattern,
--- counts the colors, and decides whether JVP or VJP should be used.
+-- Precompute the structure-dependent part of the automatic sparse Jacobian pipeline.
+-- This computes CSR structure, both colorings, the number of colors, and whether
+-- JVP or VJP should be used.
 --
 -- use_jvp = true  => choose JVP
 -- use_jvp = false => choose VJP
 def prepare_jac_auto [m][n]
   (pat: [m][n]bool)
-  : ([n]i64, [m]i64, i64, i64, bool) =
+  : ([m+1]i64, []i64, [n+1]i64, []i64,
+     [n]i64, [m]i64, i64, i64, bool) =
   let ((row_offs, row_idx), (col_offs, col_idx)) =
     CSR.csr_bipartite_from_pattern pat
 
@@ -30,66 +32,122 @@ def prepare_jac_auto [m][n]
 
   let use_jvp = num_col_colors <= num_row_colors
 
-  in (col_colors, row_colors, num_col_colors, num_row_colors, use_jvp)
+  in (row_offs, row_idx, col_offs, col_idx,
+      col_colors, row_colors,
+      num_col_colors, num_row_colors, use_jvp)
+
+
+-- --------------------- Prepared auto pipeline ---------------------
+
+-- Return the sparse Jacobian in CSR format using prepared structure/coloring.
+def eval_prepared_auto_csr [m][n]
+  (f: [n]f64 -> [m]f64)
+  (prepared: ([m+1]i64, []i64, [n+1]i64, []i64,
+              [n]i64, [m]i64, i64, i64, bool))
+  (x: [n]f64) =
+  let (row_offs, row_idx, col_offs, col_idx,
+       col_colors, row_colors,
+       _num_col_colors, _num_row_colors, use_jvp) = prepared
+
+  let jvp_prepared = (row_offs, row_idx, col_offs, col_idx, col_colors)
+  let vjp_prepared = (row_offs, row_idx, col_offs, col_idx, row_colors)
+
+  in if use_jvp
+     then JVP.eval_prepared_jvp_csr f jvp_prepared x
+     else VJP.eval_prepared_vjp_csr f vjp_prepared x
+
+-- Return the sparse Jacobian in CSR format with metadata.
+def eval_prepared_auto_csr_with_info [m][n]
+  (f: [n]f64 -> [m]f64)
+  (prepared: ([m+1]i64, []i64, [n+1]i64, []i64,
+              [n]i64, [m]i64, i64, i64, bool))
+  (x: [n]f64) =
+  let (_row_offs, _row_idx, _col_offs, _col_idx,
+       _col_colors, _row_colors,
+       num_col_colors, num_row_colors, use_jvp) = prepared
+
+  let (row_offs, row_idx, vals) =
+    eval_prepared_auto_csr f prepared x
+
+  in ((row_offs, row_idx, vals), use_jvp, num_col_colors, num_row_colors)
+
+-- Return a dense Jacobian using prepared structure/coloring.
+def eval_prepared_auto_dense [m][n]
+  (f: [n]f64 -> [m]f64)
+  (prepared: ([m+1]i64, []i64, [n+1]i64, []i64,
+              [n]i64, [m]i64, i64, i64, bool))
+  (x: [n]f64)
+  : [m][n]f64 =
+  let (row_offs, row_idx, col_offs, col_idx,
+       col_colors, row_colors,
+       _num_col_colors, _num_row_colors, use_jvp) = prepared
+
+  let jvp_prepared = (row_offs, row_idx, col_offs, col_idx, col_colors)
+  let vjp_prepared = (row_offs, row_idx, col_offs, col_idx, row_colors)
+
+  in if use_jvp
+     then JVP.eval_prepared_jvp_dense f jvp_prepared x
+     else VJP.eval_prepared_vjp_dense f vjp_prepared x
+
+-- Return a dense Jacobian with metadata.
+def eval_prepared_auto_dense_with_info [m][n]
+  (f: [n]f64 -> [m]f64)
+  (prepared: ([m+1]i64, []i64, [n+1]i64, []i64,
+              [n]i64, [m]i64, i64, i64, bool))
+  (x: [n]f64)
+  : ([m][n]f64, bool, i64, i64) =
+  let (_row_offs, _row_idx, _col_offs, _col_idx,
+       _col_colors, _row_colors,
+       num_col_colors, num_row_colors, use_jvp) = prepared
+
+  let jac =
+    eval_prepared_auto_dense f prepared x
+
+  in (jac, use_jvp, num_col_colors, num_row_colors)
+
+
+-- -------------- Full auto pipeline from a sparsity pattern --------------
 
 -- Returns only the chosen mode and coloring info.
 def jac_auto_choice [m][n]
   (pat: [m][n]bool)
   : (bool, i64, i64) =
-  let (_col_colors, _row_colors, num_col_colors, num_row_colors, use_jvp) =
+  let (_row_offs, _row_idx, _col_offs, _col_idx,
+       _col_colors, _row_colors,
+       num_col_colors, num_row_colors, use_jvp) =
     prepare_jac_auto pat
   in (use_jvp, num_col_colors, num_row_colors)
 
--- Sparse / CSR output
+-- Sparse / CSR output.
 def jac_auto_csr [m][n]
   (f: [n]f64 -> [m]f64)
   (pat: [m][n]bool)
   (x: [n]f64) =
-  let (col_colors, row_colors, _num_col_colors, _num_row_colors, use_jvp) =
-    prepare_jac_auto pat
-  in if use_jvp
-     then JVP.jac_jvp_csr_with_colors f pat col_colors x
-     else VJP.jac_vjp_csr_with_row_colors f pat row_colors x
+  let prepared = prepare_jac_auto pat
+  in eval_prepared_auto_csr f prepared x
 
--- Sparse / CSR output with metadata
+-- Sparse / CSR output with metadata.
 def jac_auto_csr_with_info [m][n]
   (f: [n]f64 -> [m]f64)
   (pat: [m][n]bool)
   (x: [n]f64) =
-  let (col_colors, row_colors, num_col_colors, num_row_colors, use_jvp) =
-    prepare_jac_auto pat
+  let prepared = prepare_jac_auto pat
+  in eval_prepared_auto_csr_with_info f prepared x
 
-  let (row_offs, row_idx, vals) =
-    if use_jvp
-    then JVP.jac_jvp_csr_with_colors f pat col_colors x
-    else VJP.jac_vjp_csr_with_row_colors f pat row_colors x
-
-  in ((row_offs, row_idx, vals), use_jvp, num_col_colors, num_row_colors)
-
--- Dense output
+-- Dense output.
 def jac_auto_dense [m][n]
   (f: [n]f64 -> [m]f64)
   (pat: [m][n]bool)
   (x: [n]f64)
   : [m][n]f64 =
-  let (col_colors, row_colors, _num_col_colors, _num_row_colors, use_jvp) =
-    prepare_jac_auto pat
-  in if use_jvp
-     then JVP.jac_jvp_dense_with_colors f pat col_colors x
-     else VJP.jac_vjp_dense_with_row_colors f pat row_colors x
+  let prepared = prepare_jac_auto pat
+  in eval_prepared_auto_dense f prepared x
 
--- Dense output with metadata
+-- Dense output with metadata.
 def jac_auto_dense_with_info [m][n]
   (f: [n]f64 -> [m]f64)
   (pat: [m][n]bool)
   (x: [n]f64)
   : ([m][n]f64, bool, i64, i64) =
-  let (col_colors, row_colors, num_col_colors, num_row_colors, use_jvp) =
-    prepare_jac_auto pat
-
-  let jac =
-    if use_jvp
-    then JVP.jac_jvp_dense_with_colors f pat col_colors x
-    else VJP.jac_vjp_dense_with_row_colors f pat row_colors x
-
-  in (jac, use_jvp, num_col_colors, num_row_colors)
+  let prepared = prepare_jac_auto pat
+  in eval_prepared_auto_dense_with_info f prepared x
