@@ -79,7 +79,7 @@ def mk_ba_obs (num_cams:i64) (num_points:i64) (num_obs:i64)
   : [num_obs][2]i32 =
   tabulate num_obs (\i ->
     [i32.i64 (i % num_cams),
-     i32.i64 ((7i64*i + 3i64) % num_points)])
+     i32.i64 (i % num_points)])
 
 def mk_ba_features (num_obs:i64) : [num_obs][2]f64 =
   tabulate num_obs (\_ -> [0.0f64, 0.0f64])
