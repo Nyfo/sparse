@@ -160,27 +160,27 @@ entry bench_dense_jvp_to_csr_ba (num_cams:i64) (num_points:i64) (num_obs:i64)
     Dense.jac_dense_jvp (\x0 -> ba_residual_flat num_cams num_points obs feat x0) x
   in dense_to_csr_vals row_offs row_idx j
 
--- -- ==
--- -- entry: bench_sparse_jvp_to_csr_ba_d2
--- -- script input { mk_ba_csr_test 32 128 2048 }
--- -- script input { mk_ba_csr_test 64 256 8192 }
--- -- script input { mk_ba_csr_test 96 384 16384 }
--- entry bench_sparse_jvp_to_csr_ba_d2 (num_cams:i64) (num_points:i64) (num_obs:i64)
---   (row_offs:[3*num_obs+1]i64) (row_idx:[]i64)
---   (col_offs:[11*num_cams + 3*num_points + num_obs + 1]i64) (col_idx:[]i64)
---   (obs:[num_obs][2]i32) (feat:[num_obs][2]f64)
---   (x:[11*num_cams + 3*num_points + num_obs]f64)
---   : []f64 =
---   let colors =
---     D2.partial_d2_color_cols row_offs row_idx col_offs col_idx
+-- ==
+-- entry: bench_sparse_jvp_to_csr_ba_d2
+-- script input { mk_ba_csr_test 32 128 2048 }
+-- script input { mk_ba_csr_test 64 256 8192 }
+-- script input { mk_ba_csr_test 96 384 16384 }
+entry bench_sparse_jvp_to_csr_ba_d2 (num_cams:i64) (num_points:i64) (num_obs:i64)
+  (row_offs:[3*num_obs+1]i64) (row_idx:[]i64)
+  (col_offs:[11*num_cams + 3*num_points + num_obs + 1]i64) (col_idx:[]i64)
+  (obs:[num_obs][2]i32) (feat:[num_obs][2]f64)
+  (x:[11*num_cams + 3*num_points + num_obs]f64)
+  : []f64 =
+  let colors =
+    D2.partial_d2_color_cols row_offs row_idx col_offs col_idx
 
---   let ys =
---     Sparse.compressed_ys_jvp
---       (\x0 -> ba_residual_flat num_cams num_points obs feat x0)
---       colors
---       x
+  let ys =
+    Sparse.compressed_ys_jvp
+      (\x0 -> ba_residual_flat num_cams num_points obs feat x0)
+      colors
+      x
 
---   in Sparse.compressed_to_csr_vals row_offs row_idx colors ys
+  in Sparse.compressed_to_csr_vals row_offs row_idx colors ys
 
 -- ==
 -- entry: bench_sparse_jvp_to_csr_ba_bgpc
