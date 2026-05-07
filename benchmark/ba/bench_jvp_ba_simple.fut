@@ -148,9 +148,9 @@ entry mk_ba_csr_test (num_cams:i64) (num_points:i64) (num_obs:i64)
 
 -- ==
 -- entry: bench_dense_jvp_to_csr_ba
--- script input { mk_ba_csr_test 2 8 16 }
--- script input { mk_ba_csr_test 4 16 64 }
 -- script input { mk_ba_csr_test 8 32 128 }
+-- script input { mk_ba_csr_test 16 64 512 }
+-- script input { mk_ba_csr_test 32 128 2048 }
 entry bench_dense_jvp_to_csr_ba (num_cams:i64) (num_points:i64) (num_obs:i64)
   (row_offs:[3*num_obs+1]i64) (row_idx:[]i64)
   (_col_offs:[11*num_cams + 3*num_points + num_obs + 1]i64) (_col_idx:[]i64)
@@ -163,9 +163,9 @@ entry bench_dense_jvp_to_csr_ba (num_cams:i64) (num_points:i64) (num_obs:i64)
 
 -- ==
 -- entry: bench_sparse_jvp_to_csr_ba_d2
--- script input { mk_ba_csr_test 2 8 16 }
--- script input { mk_ba_csr_test 4 16 64 }
 -- script input { mk_ba_csr_test 8 32 128 }
+-- script input { mk_ba_csr_test 16 64 512 }
+-- script input { mk_ba_csr_test 32 128 2048 }
 entry bench_sparse_jvp_to_csr_ba_d2 (num_cams:i64) (num_points:i64) (num_obs:i64)
   (row_offs:[3*num_obs+1]i64) (row_idx:[]i64)
   (col_offs:[11*num_cams + 3*num_points + num_obs + 1]i64) (col_idx:[]i64)
@@ -185,9 +185,9 @@ entry bench_sparse_jvp_to_csr_ba_d2 (num_cams:i64) (num_points:i64) (num_obs:i64
 
 -- ==
 -- entry: bench_sparse_jvp_to_csr_ba_bgpc
--- script input { mk_ba_csr_test 2 8 16 }
--- script input { mk_ba_csr_test 4 16 64 }
 -- script input { mk_ba_csr_test 8 32 128 }
+-- script input { mk_ba_csr_test 16 64 512 }
+-- script input { mk_ba_csr_test 32 128 2048 }
 entry bench_sparse_jvp_to_csr_ba_bgpc (num_cams:i64) (num_points:i64) (num_obs:i64)
   (row_offs:[3*num_obs+1]i64) (row_idx:[]i64)
   (col_offs:[11*num_cams + 3*num_points + num_obs + 1]i64) (col_idx:[]i64)
