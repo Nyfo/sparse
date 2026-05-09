@@ -72,6 +72,18 @@ def csr_to_dense [m][n]
 
 -- --------------------- Prepared VJP pipeline ---------------------
 
+-- Precompute everything from an already available CSR sparsity pattern.
+def prepare_vjp_from_csr [m][n]
+  (row_offs: [m+1]i64)
+  (row_idx: []i64)
+  (col_offs: [n+1]i64)
+  (col_idx: []i64)
+  =
+  let row_colors =
+    Col.vv_color_rows row_offs row_idx col_offs col_idx
+
+  in (row_offs, row_idx, col_offs, col_idx, row_colors)
+
 -- Precompute everything that only depends on the sparsity pattern.
 def prepare_vjp [m][n]
   (pat: [m][n]bool)
@@ -79,10 +91,7 @@ def prepare_vjp [m][n]
   let ((row_offs, row_idx), (col_offs, col_idx)) =
     CSR.csr_bipartite_from_pattern pat
 
-  let row_colors =
-    Col.vv_color_rows row_offs row_idx col_offs col_idx
-
-  in (row_offs, row_idx, col_offs, col_idx, row_colors)
+  in prepare_vjp_from_csr row_offs row_idx col_offs col_idx
 
 -- Return the compressed representation using prepared structure/coloring.
 def eval_prepared_vjp_compressed [m][n]
@@ -148,6 +157,22 @@ def jac_vjp_dense [m][n]
   : [m][n]f64 =
   let prepared = prepare_vjp pat
   in eval_prepared_vjp_dense f prepared x
+
+
+-- -------------- Full VJP pipeline from CSR pattern --------------
+
+-- Sparse / CSR output from an already available CSR sparsity pattern.
+def jac_vjp_csr_from_csr [m][n]
+  (f: [n]f64 -> [m]f64)
+  (row_offs: [m+1]i64)
+  (row_idx: []i64)
+  (col_offs: [n+1]i64)
+  (col_idx: []i64)
+  (x: [n]f64)
+  =
+  let prepared =
+    prepare_vjp_from_csr row_offs row_idx col_offs col_idx
+  in eval_prepared_vjp_csr f prepared x
 
 
 -- -------------- Wrappers with precomputed row colors --------------
