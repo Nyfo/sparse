@@ -3,7 +3,6 @@ module Sparse = import "../../src/sparse_jacobian_jvp"
 module D2 = import "../../src/partial_d2_coloring"
 module BGPC = import "../../src/bgpc_vv_coloring"
 module Cases = import "./ba_cases"
-module CSR = import "../../src/pattern_csr"
 
 
 def dense_to_csr_vals [m][n]
@@ -90,43 +89,6 @@ entry bench_sparse_jvp_to_csr_ba_bgpc (num_cams:i64) (num_points:i64) (num_obs:i
   : []f64 =
   let colors =
     BGPC.vv_color_cols row_offs row_idx col_offs col_idx
-
-  let ys =
-    Sparse.compressed_ys_jvp
-      (\x0 -> Cases.ba_residual_flat num_cams num_points obs feat x0)
-      colors
-      x
-
-  in Sparse.compressed_to_csr_vals row_offs row_idx colors ys
-
-entry mk_ba_dense_pat_test (num_cams:i64) (num_points:i64) (num_obs:i64)
-  : (i64, i64, i64,
-     [3*num_obs][11*num_cams + 3*num_points + num_obs]bool,
-     [num_obs][2]i32, [num_obs][2]f64,
-     [11*num_cams + 3*num_points + num_obs]f64) =
-  let obs = Cases.mk_ba_obs num_cams num_points num_obs
-  let feat = Cases.mk_ba_features num_obs
-  let x = Cases.mk_ba_x num_cams num_points num_obs
-  let pat : [3*num_obs][11*num_cams + 3*num_points + num_obs]bool =
-    Cases.pat_ba num_cams num_points obs
-  in (num_cams, num_points, num_obs, pat, obs, feat, x)
-
-
--- ==
--- entry: bench_sparse_jvp_to_csr_ba_d2_from_dense_pat
--- script input { mk_ba_dense_pat_test 64 256 8192 }
--- script input { mk_ba_dense_pat_test 96 384 16384 }
-entry bench_sparse_jvp_to_csr_ba_d2_from_dense_pat
-  (num_cams:i64) (num_points:i64) (num_obs:i64)
-  (pat:[3*num_obs][11*num_cams + 3*num_points + num_obs]bool)
-  (obs:[num_obs][2]i32) (feat:[num_obs][2]f64)
-  (x:[11*num_cams + 3*num_points + num_obs]f64)
-  : []f64 =
-  let ((row_offs, row_idx), (col_offs, col_idx)) =
-    CSR.csr_bipartite_from_pattern pat
-
-  let colors =
-    D2.partial_d2_color_cols row_offs row_idx col_offs col_idx
 
   let ys =
     Sparse.compressed_ys_jvp
