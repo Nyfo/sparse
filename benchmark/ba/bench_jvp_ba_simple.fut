@@ -91,15 +91,8 @@ def mk_ba_x (num_cams:i64) (num_points:i64) (num_obs:i64)
       let k = idx % 11i64
       in if k == 6i64 then 1.0f64 else 0.0f64
     else if idx < 11*num_cams + 3*num_points then
-      let rel = idx - 11*num_cams
-      let point_id = rel / 3i64
-      let k = rel % 3i64
-      in if k == 0i64 then
-           0.01f64 * f64.i64 (point_id % 17i64)
-         else if k == 1i64 then
-           0.01f64 * f64.i64 ((3i64 * point_id) % 17i64)
-         else
-           4.0f64 + 0.01f64 * f64.i64 (point_id % 13i64)
+      let k = (idx - 11*num_cams) % 3i64
+      in if k == 2i64 then 4.0f64 else 0.0f64
     else
       1.0f64)
 
