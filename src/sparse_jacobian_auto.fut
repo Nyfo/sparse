@@ -8,19 +8,14 @@ def num_colors_of [k] (colors: [k]i64) : i64 =
   if k == 0 then 0i64
   else 1i64 + reduce i64.max 0i64 colors
 
--- Precompute the structure-dependent part of the automatic sparse Jacobian pipeline.
--- This computes CSR structure, both colorings, the number of colors, and whether
--- JVP or VJP should be used.
---
--- use_jvp = true  => choose JVP
--- use_jvp = false => choose VJP
-def prepare_jac_auto [m][n]
-  (pat: [m][n]bool)
+-- Precompute the structure-dependent part from an already available CSR sparsity pattern.
+def prepare_jac_auto_from_csr [m][n]
+  (row_offs: [m+1]i64)
+  (row_idx: []i64)
+  (col_offs: [n+1]i64)
+  (col_idx: []i64)
   : ([m+1]i64, []i64, [n+1]i64, []i64,
      [n]i64, [m]i64, i64, i64, bool) =
-  let ((row_offs, row_idx), (col_offs, col_idx)) =
-    CSR.csr_bipartite_from_pattern pat
-
   let col_colors =
     Col.vv_color_cols row_offs row_idx col_offs col_idx
 
@@ -35,6 +30,22 @@ def prepare_jac_auto [m][n]
   in (row_offs, row_idx, col_offs, col_idx,
       col_colors, row_colors,
       num_col_colors, num_row_colors, use_jvp)
+
+
+-- Precompute the structure-dependent part of the automatic sparse Jacobian pipeline.
+-- This computes CSR structure, both colorings, the number of colors, and whether
+-- JVP or VJP should be used.
+--
+-- use_jvp = true  => choose JVP
+-- use_jvp = false => choose VJP
+def prepare_jac_auto [m][n]
+  (pat: [m][n]bool)
+  : ([m+1]i64, []i64, [n+1]i64, []i64,
+     [n]i64, [m]i64, i64, i64, bool) =
+  let ((row_offs, row_idx), (col_offs, col_idx)) =
+    CSR.csr_bipartite_from_pattern pat
+
+  in prepare_jac_auto_from_csr row_offs row_idx col_offs col_idx
 
 
 -- --------------------- Prepared auto pipeline ---------------------
@@ -132,6 +143,33 @@ def jac_auto_csr_with_info [m][n]
   (pat: [m][n]bool)
   (x: [n]f64) =
   let prepared = prepare_jac_auto pat
+  in eval_prepared_auto_csr_with_info f prepared x
+
+
+-- -------------- Full auto pipeline from CSR pattern --------------
+
+-- Sparse / CSR output from an already available CSR sparsity pattern.
+def jac_auto_csr_from_csr [m][n]
+  (f: [n]f64 -> [m]f64)
+  (row_offs: [m+1]i64)
+  (row_idx: []i64)
+  (col_offs: [n+1]i64)
+  (col_idx: []i64)
+  (x: [n]f64) =
+  let prepared =
+    prepare_jac_auto_from_csr row_offs row_idx col_offs col_idx
+  in eval_prepared_auto_csr f prepared x
+
+-- Sparse / CSR output with metadata from an already available CSR sparsity pattern.
+def jac_auto_csr_from_csr_with_info [m][n]
+  (f: [n]f64 -> [m]f64)
+  (row_offs: [m+1]i64)
+  (row_idx: []i64)
+  (col_offs: [n+1]i64)
+  (col_idx: []i64)
+  (x: [n]f64) =
+  let prepared =
+    prepare_jac_auto_from_csr row_offs row_idx col_offs col_idx
   in eval_prepared_auto_csr_with_info f prepared x
 
 -- Dense output.

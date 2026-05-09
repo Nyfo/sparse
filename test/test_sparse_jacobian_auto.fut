@@ -2,6 +2,7 @@
 
 module Dense = import "../src/dense_jacobian"
 module Auto  = import "../src/sparse_jacobian_auto"
+module CSR   = import "../src/pattern_csr"
 
 def approx_eq_mat [m][n] (a:[m][n]f64) (b:[m][n]f64) (eps:f64) : bool =
   let row_ok (ra:[n]f64) (rb:[n]f64) : bool =
@@ -236,3 +237,29 @@ entry test_sparse_auto_ex5_csr_with_info (x:[6]f64) : bool =
      && !use_jvp
      && num_col_colors == 3i64
      && num_row_colors == 2i64
+
+-- ==
+-- entry: test_sparse_auto_csr_from_csr_ex5_with_info
+-- input  { [2.0f64, -3.0f64, 4.0f64, 1.5f64, 99.0f64, -2.0f64] }
+-- output { true }
+entry test_sparse_auto_csr_from_csr_ex5_with_info (x:[6]f64) : bool =
+  let eps = 1e-9f64
+
+  let jd =
+    mask_with_pattern pat_ex5 (Dense.jac_dense_jvp f_ex5 x)
+
+  let ((row_offs, row_idx), (col_offs, col_idx)) =
+    CSR.csr_bipartite_from_pattern pat_ex5
+
+  let ((out_row_offs, out_row_idx, vals), use_jvp, num_col_colors, num_row_colors) =
+    Auto.jac_auto_csr_from_csr_with_info f_ex5 row_offs row_idx col_offs col_idx x
+
+  let ja =
+    csr_to_dense out_row_offs out_row_idx vals
+
+  in approx_eq_mat ja jd eps
+     && !use_jvp
+     && num_col_colors == 3i64
+     && num_row_colors == 2i64
+
+
