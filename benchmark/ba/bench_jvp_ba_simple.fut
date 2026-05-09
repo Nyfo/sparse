@@ -53,6 +53,23 @@ entry bench_dense_jvp_to_csr_ba (num_cams:i64) (num_points:i64) (num_obs:i64)
   in dense_to_csr_vals row_offs row_idx j
 
 -- ==
+-- entry: bench_dense_jvp_ba
+-- script input { mk_ba_csr_test 64 256 8192 }
+-- script input { mk_ba_csr_test 96 384 16384 }
+-- script input { mk_ba_csr_test 128 512 32768 }
+-- script input { mk_ba_csr_test 160 640 40960 }
+entry bench_dense_jvp_ba (num_cams:i64) (num_points:i64) (num_obs:i64)
+  (_row_offs:[3*num_obs+1]i64) (_row_idx:[]i64)
+  (_col_offs:[11*num_cams + 3*num_points + num_obs + 1]i64) (_col_idx:[]i64)
+  (obs:[num_obs][2]i32) (feat:[num_obs][2]f64)
+  (x:[11*num_cams + 3*num_points + num_obs]f64)
+  : [3*num_obs][11*num_cams + 3*num_points + num_obs]f64 =
+  Dense.jac_dense_jvp
+    (\x0 -> Cases.ba_residual_flat num_cams num_points obs feat x0)
+    x
+
+
+-- ==
 -- entry: bench_sparse_jvp_to_csr_ba_d2
 -- script input { mk_ba_csr_test 64 256 8192 }
 -- script input { mk_ba_csr_test 96 384 16384 }
