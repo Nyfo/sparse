@@ -5,26 +5,50 @@ module BGPC = import "../../src/bgpc_vv_coloring"
 module Cases = import "./ba_cases"
 
 
-def dense_to_csr_vals [m][n]
+def csr_row_ids [m][nnz]
   (row_offs:[m+1]i64)
-  (row_idx:[]i64)
-  (j:[m][n]f64)
-  : []f64 =
-  let nnz = length row_idx
-  let vals0 = replicate nnz 0.0f64
+  (_row_idx:[nnz]i64)
+  : [nnz]i64 =
+  let rows0 = replicate nnz 0i64
 
-  let (vals_final, _i) =
-    loop (vals, i) = (vals0, 0i64)
+  let (rows, _i) =
+    loop (acc, i) = (rows0, 0i64)
     while i < m do
       let s = row_offs[i]
       let e = row_offs[i+1]
-      let cols = row_idx[s:e]
-      let jrow = j[i]
-      let seg = map (\col -> jrow[col]) cols
-      let vals' = vals with [s:e] = seg
-      in (vals', i + 1i64)
+      let len = e - s
+      let seg = replicate len i
+      let acc' = acc with [s:e] = seg
+      in (acc', i + 1i64)
 
-  in vals_final
+  in rows
+
+def dense_to_csr_vals [m][n][nnz]
+  (row_ids:[nnz]i64)
+  (row_idx:[nnz]i64)
+  (j:[m][n]f64)
+  : [nnz]f64 =
+  map2 (\i col -> j[i, col]) row_ids row_idx
+
+entry mk_ba_csr_test_with_row_ids (num_cams:i64) (num_points:i64) (num_obs:i64)
+  : (i64, i64, i64,
+     [3*num_obs+1]i64, []i64, []i64,
+     [11*num_cams + 3*num_points + num_obs + 1]i64, []i64,
+     [num_obs][2]i32, [num_obs][2]f64,
+     [11*num_cams + 3*num_points + num_obs]f64) =
+  let (num_cams', num_points', num_obs',
+       row_offs, row_idx, col_offs, col_idx,
+       obs, feat, x) =
+    Cases.mk_ba_csr_data num_cams num_points num_obs
+
+  let row_ids =
+    csr_row_ids row_offs row_idx
+
+  in (num_cams', num_points', num_obs',
+      row_offs, row_ids, row_idx,
+      col_offs, col_idx,
+      obs, feat, x)
+
 
 entry mk_ba_csr_test (num_cams:i64) (num_points:i64) (num_obs:i64)
   : (i64, i64, i64,
@@ -36,51 +60,22 @@ entry mk_ba_csr_test (num_cams:i64) (num_points:i64) (num_obs:i64)
 
 -- ==
 -- entry: bench_dense_jvp_to_csr_ba
--- script input { mk_ba_csr_test 64 256 8192 }
--- script input { mk_ba_csr_test 96 384 16384 }
--- script input { mk_ba_csr_test 128 512 32768 }
--- script input { mk_ba_csr_test 160 640 40960 }
-entry bench_dense_jvp_to_csr_ba (num_cams:i64) (num_points:i64) (num_obs:i64)
-  (row_offs:[3*num_obs+1]i64) (row_idx:[]i64)
+-- script input { mk_ba_csr_test_with_row_ids 64 256 8192 }
+-- script input { mk_ba_csr_test_with_row_ids 96 384 16384 }
+-- script input { mk_ba_csr_test_with_row_ids 128 512 32768 }
+-- script input { mk_ba_csr_test_with_row_ids 160 640 40960 }
+entry bench_dense_jvp_to_csr_ba [nnz]
+  (num_cams:i64) (num_points:i64) (num_obs:i64)
+  (_row_offs:[3*num_obs+1]i64) (row_ids:[nnz]i64) (row_idx:[nnz]i64)
   (_col_offs:[11*num_cams + 3*num_points + num_obs + 1]i64) (_col_idx:[]i64)
   (obs:[num_obs][2]i32) (feat:[num_obs][2]f64)
   (x:[11*num_cams + 3*num_points + num_obs]f64)
-  : []f64 =
+  : [nnz]f64 =
   let j =
     Dense.jac_dense_jvp
       (\x0 -> Cases.ba_residual_flat num_cams num_points obs feat x0)
       x
-  in dense_to_csr_vals row_offs row_idx j
-
--- ==
--- entry: bench_dense_jvp_ba
--- script input { mk_ba_csr_test 64 256 8192 }
--- script input { mk_ba_csr_test 96 384 16384 }
-entry bench_dense_jvp_ba (num_cams:i64) (num_points:i64) (num_obs:i64)
-  (_row_offs:[3*num_obs+1]i64) (_row_idx:[]i64)
-  (_col_offs:[11*num_cams + 3*num_points + num_obs + 1]i64) (_col_idx:[]i64)
-  (obs:[num_obs][2]i32) (feat:[num_obs][2]f64)
-  (x:[11*num_cams + 3*num_points + num_obs]f64)
-  : [3*num_obs][11*num_cams + 3*num_points + num_obs]f64 =
-  Dense.jac_dense_jvp
-    (\x0 -> Cases.ba_residual_flat num_cams num_points obs feat x0)
-    x
-
--- ==
--- entry: bench_dense_jvp_checksum_ba
--- script input { mk_ba_csr_test 64 256 8192 }
--- script input { mk_ba_csr_test 96 384 16384 }
-entry bench_dense_jvp_checksum_ba (num_cams:i64) (num_points:i64) (num_obs:i64)
-  (_row_offs:[3*num_obs+1]i64) (_row_idx:[]i64)
-  (_col_offs:[11*num_cams + 3*num_points + num_obs + 1]i64) (_col_idx:[]i64)
-  (obs:[num_obs][2]i32) (feat:[num_obs][2]f64)
-  (x:[11*num_cams + 3*num_points + num_obs]f64)
-  : f64 =
-  let j =
-    Dense.jac_dense_jvp
-      (\x0 -> Cases.ba_residual_flat num_cams num_points obs feat x0)
-      x
-  in reduce (+) 0.0f64 (flatten j)
+  in dense_to_csr_vals row_ids row_idx j
 
 
 -- ==
