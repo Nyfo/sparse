@@ -99,29 +99,29 @@ entry bench_sparse_jvp_to_csr_ba_bgpc (num_cams:i64) (num_points:i64) (num_obs:i
 
   in Sparse.compressed_to_csr_vals row_offs row_idx colors ys
 
-entry mk_ba_raw_test (num_cams:i64) (num_points:i64) (num_obs:i64)
+entry mk_ba_dense_pat_test (num_cams:i64) (num_points:i64) (num_obs:i64)
   : (i64, i64, i64,
+     [3*num_obs][11*num_cams + 3*num_points + num_obs]bool,
      [num_obs][2]i32, [num_obs][2]f64,
      [11*num_cams + 3*num_points + num_obs]f64) =
   let obs = Cases.mk_ba_obs num_cams num_points num_obs
   let feat = Cases.mk_ba_features num_obs
   let x = Cases.mk_ba_x num_cams num_points num_obs
-  in (num_cams, num_points, num_obs, obs, feat, x)
+  let pat : [3*num_obs][11*num_cams + 3*num_points + num_obs]bool =
+    Cases.pat_ba num_cams num_points obs
+  in (num_cams, num_points, num_obs, pat, obs, feat, x)
+
 
 -- ==
--- entry: bench_sparse_jvp_to_csr_ba_d2_full
--- script input { mk_ba_raw_test 64 256 8192 }
--- script input { mk_ba_raw_test 96 384 16384 }
--- script input { mk_ba_raw_test 128 512 32768 }
--- script input { mk_ba_raw_test 160 640 40960 }
-entry bench_sparse_jvp_to_csr_ba_d2_full
+-- entry: bench_sparse_jvp_to_csr_ba_d2_from_dense_pat
+-- script input { mk_ba_dense_pat_test 64 256 8192 }
+-- script input { mk_ba_dense_pat_test 96 384 16384 }
+entry bench_sparse_jvp_to_csr_ba_d2_from_dense_pat
   (num_cams:i64) (num_points:i64) (num_obs:i64)
+  (pat:[3*num_obs][11*num_cams + 3*num_points + num_obs]bool)
   (obs:[num_obs][2]i32) (feat:[num_obs][2]f64)
   (x:[11*num_cams + 3*num_points + num_obs]f64)
   : []f64 =
-  let pat : [3*num_obs][11*num_cams + 3*num_points + num_obs]bool =
-    Cases.pat_ba num_cams num_points obs
-
   let ((row_offs, row_idx), (col_offs, col_idx)) =
     CSR.csr_bipartite_from_pattern pat
 
@@ -135,3 +135,4 @@ entry bench_sparse_jvp_to_csr_ba_d2_full
       x
 
   in Sparse.compressed_to_csr_vals row_offs row_idx colors ys
+
