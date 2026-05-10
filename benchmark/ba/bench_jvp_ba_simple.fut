@@ -62,6 +62,7 @@ entry mk_ba_csr_test (num_cams:i64) (num_points:i64) (num_obs:i64)
 -- entry: bench_dense_jvp_ba_raw
 -- script input { mk_ba_csr_test 64 256 8192 }
 -- script input { mk_ba_csr_test 96 384 16384 }
+-- script input { mk_ba_csr_test 128 512 32768 }
 entry bench_dense_jvp_ba_raw (num_cams:i64) (num_points:i64) (num_obs:i64)
   (_row_offs:[3*num_obs+1]i64) (_row_idx:[]i64)
   (_col_offs:[11*num_cams + 3*num_points + num_obs + 1]i64) (_col_idx:[]i64)
