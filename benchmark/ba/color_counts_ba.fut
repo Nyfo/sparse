@@ -29,8 +29,14 @@ def ba_bgpc_colors (num_cams:i64) (num_points:i64) (num_obs:i64) : i64 =
   in num_colors_of colors
 
 entry color_counts_ba : []i64 =
-  [ ba_d2_colors 64i64 256i64 8192i64
+  [ ba_d2_colors 32i64 128i64 2048i64
+  , ba_bgpc_colors 32i64 128i64 2048i64
+
+  , ba_d2_colors 64i64 256i64 8192i64
   , ba_bgpc_colors 64i64 256i64 8192i64
+
+  , ba_d2_colors 80i64 320i64 12288i64
+  , ba_bgpc_colors 80i64 320i64 12288i64
 
   , ba_d2_colors 96i64 384i64 16384i64
   , ba_bgpc_colors 96i64 384i64 16384i64
@@ -41,3 +47,4 @@ entry color_counts_ba : []i64 =
   , ba_d2_colors 160i64 640i64 40960i64
   , ba_bgpc_colors 160i64 640i64 40960i64
   ]
+

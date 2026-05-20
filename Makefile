@@ -32,14 +32,22 @@ bench-gpu:
 
 # section: cleanup
 clean:
-	rm -f test/*.c benchmark/*.c
+	rm -f test/*.c benchmark/*.c benchmark/ba/*.c benchmark/ht/*.c
 	rm -f test/test_dense_jacobian \
 	      test/test_pattern_csr \
 	      test/test_partial_d2_coloring \
 	      test/test_sparse_jacobian_jvp \
 	      test/test_sparse_jacobian_vjp \
-		  test/test_bgpc_vv_coloring
+	      test/test_sparse_jacobian_auto \
+	      test/test_bgpc_vv_coloring
 	rm -f benchmark/bench_dense_jacobian \
 	      benchmark/bench_jvp_structured \
 	      benchmark/bench_vjp_structured \
-	      benchmark/bench_jvp_spiky
+	      benchmark/bench_coloring_structured \
+	      benchmark/color_counts_structured
+	rm -f benchmark/ba/bench_jvp_ba_simple \
+	      benchmark/ba/bench_coloring_ba \
+	      benchmark/ba/color_counts_ba \
+	      benchmark/ba/test_jvp_ba_correctness
+	rm -f benchmark/ht/bench_jvp_ht_simple \
+	      benchmark/ht/test_jvp_ht_correctness
