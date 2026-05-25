@@ -14,7 +14,7 @@ def mask_with_pattern [m][n] (pat:[m][n]bool) (j:[m][n]f64) : [m][n]f64 =
           map2 (\p x -> if p then x else 0.0f64) prow jrow)
        pat j
 
--- Example 1 (3x5)
+-- Example 1: simple wide sparse Jacobian.
 def f_ex1 (x:[5]f64) : [3]f64 =
   let y0 = x[0] + 2.0f64 * x[3]
   let y1 = 5.0f64 * x[1]
@@ -27,6 +27,7 @@ def pat_ex1 : [3][5]bool =
   , [false, false, true,  false, false]
   ]
 
+-- Simple sparse pattern: sparse JVP dense output matches masked dense Jacobian.
 -- ==
 -- entry: test_sparse_jvp_ex1_matches_dense
 -- input  { [1.0f64, 2.0f64, 3.0f64, 4.0f64, 5.0f64] }
@@ -37,7 +38,7 @@ entry test_sparse_jvp_ex1_matches_dense (x:[5]f64) : bool =
   let js = Sparse.jac_jvp_dense f_ex1 pat_ex1 x
   in approx_eq_mat js jd eps
 
--- Example 2
+-- Example 2: small rectangular pattern with shared output dependency.
 def f_ex2 (x:[4]f64) : [2]f64 =
   let y0 = x[0] + x[1]
   let y1 = 7.0f64 * x[2]
@@ -48,6 +49,7 @@ def pat_ex2 : [2][4]bool =
   , [false, false, true,  false]
   ]
 
+-- Rectangular sparse pattern: sparse JVP dense output matches masked dense Jacobian.
 -- ==
 -- entry: test_sparse_jvp_ex2_matches_dense
 -- input  { [2.0f64, 3.0f64, 5.0f64, 7.0f64] }
@@ -58,7 +60,7 @@ entry test_sparse_jvp_ex2_matches_dense (x:[4]f64) : bool =
   let js = Sparse.jac_jvp_dense f_ex2 pat_ex2 x
   in approx_eq_mat js jd eps
 
--- Example 3: zero sparsity pattern / constant function
+-- Example 3: zero sparsity pattern and constant function.
 def f_ex3_zero (_x:[3]f64) : [2]f64 =
   [42.0f64, -7.0f64]
 
@@ -67,6 +69,7 @@ def pat_ex3_zero : [2][3]bool =
   , [false, false, false]
   ]
 
+-- Zero pattern: sparse JVP output should be the all-zero masked Jacobian.
 -- ==
 -- entry: test_sparse_jvp_zero_pattern_matches_dense
 -- input  { [3.0f64, -1.0f64, 9.0f64] }
@@ -77,7 +80,7 @@ entry test_sparse_jvp_zero_pattern_matches_dense (x:[3]f64) : bool =
   let js = Sparse.jac_jvp_dense f_ex3_zero pat_ex3_zero x
   in approx_eq_mat js jd eps
 
--- Example 4: mixed nonlinear dependencies with an empty row
+-- Example 4: mixed nonlinear dependencies with an empty row.
 def f_ex4 (x:[6]f64) : [4]f64 =
   let y0 = x[0] * x[1] + 3.0f64 * x[4]
   let y1 = x[2] - x[5] * x[5]
@@ -94,6 +97,7 @@ def pat_ex4 : [4][6]bool =
 
 def colors_ex4 : [6]i64 = [0i64, 1i64, 0i64, 2i64, 2i64, 1i64]
 
+-- Mixed nonlinear pattern with an empty row.
 -- ==
 -- entry: test_sparse_jvp_ex4_matches_dense
 -- input  { [1.5f64, -2.0f64, 0.5f64, 7.0f64, 3.0f64, -4.0f64] }
@@ -104,6 +108,7 @@ entry test_sparse_jvp_ex4_matches_dense (x:[6]f64) : bool =
   let js = Sparse.jac_jvp_dense f_ex4 pat_ex4 x
   in approx_eq_mat js jd eps
 
+-- Explicit colors path: user-provided valid colors give the same sparse Jacobian.
 -- ==
 -- entry: test_sparse_jvp_ex4_with_colors_matches_dense
 -- input  { [1.5f64, -2.0f64, 0.5f64, 7.0f64, 3.0f64, -4.0f64] }
@@ -114,7 +119,32 @@ entry test_sparse_jvp_ex4_with_colors_matches_dense (x:[6]f64) : bool =
   let js = Sparse.jac_jvp_dense_with_colors f_ex4 pat_ex4 colors_ex4 x
   in approx_eq_mat js jd eps
 
--- Example 5: another mixed pattern with shared and unused structure
+-- Direct compressed output: compressed JVP values reconstruct to the masked dense Jacobian.
+-- ==
+-- entry: test_sparse_jvp_ex4_compressed_matches_dense
+-- input  { [1.5f64, -2.0f64, 0.5f64, 7.0f64, 3.0f64, -4.0f64] }
+-- output { true }
+entry test_sparse_jvp_ex4_compressed_matches_dense (x:[6]f64) : bool =
+  let eps = 1e-9f64
+
+  let jd =
+    mask_with_pattern pat_ex4 (Dense.jac_dense_jvp f_ex4 x)
+
+  let ((row_offs, row_idx), (_col_offs, _col_idx)) =
+    CSR.csr_bipartite_from_pattern pat_ex4
+
+  let ys =
+    Sparse.compressed_ys_jvp f_ex4 colors_ex4 x
+
+  let vals =
+    Sparse.compressed_to_csr_vals row_offs row_idx colors_ex4 ys
+
+  let js =
+    Sparse.csr_to_dense row_offs row_idx vals
+
+  in approx_eq_mat js jd eps
+
+-- Example 5: another mixed pattern with shared and unused structure.
 def f_ex5 (x:[5]f64) : [5]f64 =
   let y0 = x[0] * x[0] + x[4]
   let y1 = x[1] * x[3]
@@ -131,6 +161,7 @@ def pat_ex5 : [5][5]bool =
   , [false, false, false, false, false]
   ]
 
+-- Additional nonlinear pattern with shared dependencies and an unused output row.
 -- ==
 -- entry: test_sparse_jvp_ex5_matches_dense
 -- input  { [2.0f64, -1.5f64, 3.0f64, 4.0f64, -2.0f64] }
@@ -141,7 +172,7 @@ entry test_sparse_jvp_ex5_matches_dense (x:[5]f64) : bool =
   let js = Sparse.jac_jvp_dense f_ex5 pat_ex5 x
   in approx_eq_mat js jd eps
 
-
+-- Prepared pipeline: precomputed structure gives the same result as dense masking.
 -- ==
 -- entry: test_prepared_jvp_ex4_matches_dense
 -- input  { [1.5f64, -2.0f64, 0.5f64, 7.0f64, 3.0f64, -4.0f64] }
@@ -153,7 +184,7 @@ entry test_prepared_jvp_ex4_matches_dense (x:[6]f64) : bool =
   let js = Sparse.eval_prepared_jvp_dense f_ex4 prepared x
   in approx_eq_mat js jd eps
 
-
+-- Prepared reuse: the same prepared structure works for multiple input points.
 -- ==
 -- entry: test_prepared_jvp_reuse_two_points
 -- input  { [1.5f64, -2.0f64, 0.5f64, 7.0f64, 3.0f64, -4.0f64] }
@@ -173,7 +204,7 @@ entry test_prepared_jvp_reuse_two_points (x1:[6]f64) : bool =
 
   in approx_eq_mat js1 jd1 eps && approx_eq_mat js2 jd2 eps
 
-
+-- CSR-from-CSR API: sparse CSR output reconstructs to the masked dense Jacobian.
 -- ==
 -- entry: test_jvp_csr_from_csr_ex4_matches_dense
 -- input  { [1.5f64, -2.0f64, 0.5f64, 7.0f64, 3.0f64, -4.0f64] }
@@ -194,6 +225,3 @@ entry test_jvp_csr_from_csr_ex4_matches_dense (x:[6]f64) : bool =
     Sparse.csr_to_dense out_row_offs out_row_idx vals
 
   in approx_eq_mat js jd eps
-
-
-

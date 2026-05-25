@@ -28,172 +28,153 @@ def csr_to_dense [m][n]
         in scatter row0 cols vs)
       (iota m)
 
--- Example 1: JVP should be preferred
--- Columns need 2 colors, rows need 4 colors.
-def f_ex1 (x:[4]f64) : [4]f64 =
+-- Example 1: JVP should be preferred.
+-- Column coloring needs 2 colors, row coloring needs 4 colors.
+def f_jvp_choice (x:[4]f64) : [4]f64 =
   let y0 = x[0] + 2.0f64 * x[1]
   let y1 = x[0] * x[2]
   let y2 = x[0] - x[3] * x[3]
   let y3 = 5.0f64 * x[0]
   in [y0, y1, y2, y3]
 
-def pat_ex1 : [4][4]bool =
+def pat_jvp_choice : [4][4]bool =
   [ [true,  true,  false, false]
   , [true,  false, true,  false]
   , [true,  false, false, true ]
   , [true,  false, false, false]
   ]
 
+-- JVP-choice dense output: auto selects JVP and matches masked dense Jacobian.
 -- ==
--- entry: test_sparse_auto_ex1_dense_with_info
+-- entry: test_sparse_auto_jvp_choice_dense_with_info
 -- input  { [2.0f64, -1.0f64, 3.0f64, 4.0f64] }
 -- output { true }
-entry test_sparse_auto_ex1_dense_with_info (x:[4]f64) : bool =
+entry test_sparse_auto_jvp_choice_dense_with_info (x:[4]f64) : bool =
   let eps = 1e-9f64
-  let jd = mask_with_pattern pat_ex1 (Dense.jac_dense_jvp f_ex1 x)
+  let jd = mask_with_pattern pat_jvp_choice (Dense.jac_dense_jvp f_jvp_choice x)
   let (ja, use_jvp, num_col_colors, num_row_colors) =
-    Auto.jac_auto_dense_with_info f_ex1 pat_ex1 x
+    Auto.jac_auto_dense_with_info f_jvp_choice pat_jvp_choice x
   in approx_eq_mat ja jd eps
      && use_jvp
      && num_col_colors == 2i64
      && num_row_colors == 4i64
 
+-- JVP-choice CSR output: auto CSR output reconstructs to masked dense Jacobian.
 -- ==
--- entry: test_sparse_auto_ex1_csr_with_info
+-- entry: test_sparse_auto_jvp_choice_csr_with_info
 -- input  { [2.0f64, -1.0f64, 3.0f64, 4.0f64] }
 -- output { true }
-entry test_sparse_auto_ex1_csr_with_info (x:[4]f64) : bool =
+entry test_sparse_auto_jvp_choice_csr_with_info (x:[4]f64) : bool =
   let eps = 1e-9f64
-  let jd = mask_with_pattern pat_ex1 (Dense.jac_dense_jvp f_ex1 x)
+  let jd = mask_with_pattern pat_jvp_choice (Dense.jac_dense_jvp f_jvp_choice x)
   let ((row_offs, row_idx, vals), use_jvp, num_col_colors, num_row_colors) =
-    Auto.jac_auto_csr_with_info f_ex1 pat_ex1 x
+    Auto.jac_auto_csr_with_info f_jvp_choice pat_jvp_choice x
   let ja = csr_to_dense row_offs row_idx vals
   in approx_eq_mat ja jd eps
      && use_jvp
      && num_col_colors == 2i64
      && num_row_colors == 4i64
 
--- Example 2: VJP should be preferred
--- Columns need 4 colors, rows need 2 colors.
-def f_ex2 (x:[4]f64) : [4]f64 =
+-- Example 2: VJP should be preferred.
+-- Column coloring needs 4 colors, row coloring needs 2 colors.
+def f_vjp_choice (x:[4]f64) : [4]f64 =
   let y0 = x[0] + x[1] + x[2] + x[3]
   let y1 = 3.0f64 * x[0]
   let y2 = x[1] * x[1]
   let y3 = 4.0f64 * x[2]
   in [y0, y1, y2, y3]
 
-def pat_ex2 : [4][4]bool =
+def pat_vjp_choice : [4][4]bool =
   [ [true,  true,  true,  true ]
   , [true,  false, false, false]
   , [false, true,  false, false]
   , [false, false, true,  false]
   ]
 
+-- VJP-choice dense output: auto selects VJP and matches masked dense Jacobian.
 -- ==
--- entry: test_sparse_auto_ex2_dense_with_info
+-- entry: test_sparse_auto_vjp_choice_dense_with_info
 -- input  { [1.0f64, 2.0f64, 3.0f64, 4.0f64] }
 -- output { true }
-entry test_sparse_auto_ex2_dense_with_info (x:[4]f64) : bool =
+entry test_sparse_auto_vjp_choice_dense_with_info (x:[4]f64) : bool =
   let eps = 1e-9f64
-  let jd = mask_with_pattern pat_ex2 (Dense.jac_dense_jvp f_ex2 x)
+  let jd = mask_with_pattern pat_vjp_choice (Dense.jac_dense_jvp f_vjp_choice x)
   let (ja, use_jvp, num_col_colors, num_row_colors) =
-    Auto.jac_auto_dense_with_info f_ex2 pat_ex2 x
+    Auto.jac_auto_dense_with_info f_vjp_choice pat_vjp_choice x
   in approx_eq_mat ja jd eps
      && !use_jvp
      && num_col_colors == 4i64
      && num_row_colors == 2i64
 
+-- VJP-choice CSR output: auto CSR output reconstructs to masked dense Jacobian.
 -- ==
--- entry: test_sparse_auto_ex2_csr_with_info
+-- entry: test_sparse_auto_vjp_choice_csr_with_info
 -- input  { [1.0f64, 2.0f64, 3.0f64, 4.0f64] }
 -- output { true }
-entry test_sparse_auto_ex2_csr_with_info (x:[4]f64) : bool =
+entry test_sparse_auto_vjp_choice_csr_with_info (x:[4]f64) : bool =
   let eps = 1e-9f64
-  let jd = mask_with_pattern pat_ex2 (Dense.jac_dense_jvp f_ex2 x)
+  let jd = mask_with_pattern pat_vjp_choice (Dense.jac_dense_jvp f_vjp_choice x)
   let ((row_offs, row_idx, vals), use_jvp, num_col_colors, num_row_colors) =
-    Auto.jac_auto_csr_with_info f_ex2 pat_ex2 x
+    Auto.jac_auto_csr_with_info f_vjp_choice pat_vjp_choice x
   let ja = csr_to_dense row_offs row_idx vals
   in approx_eq_mat ja jd eps
      && !use_jvp
      && num_col_colors == 4i64
      && num_row_colors == 2i64
 
--- Example 3: tie, so JVP should be chosen
--- Both columns and rows need 1 color.
-def f_ex3 (x:[5]f64) : [3]f64 =
+-- Example 3: tie case. Both modes need one color, so JVP should be chosen.
+def f_tie_choice (x:[5]f64) : [3]f64 =
   let y0 = 2.0f64 * x[0]
   let y1 = x[2] * x[2]
   let y2 = x[4] - 1.0f64
   in [y0, y1, y2]
 
-def pat_ex3 : [3][5]bool =
+def pat_tie_choice : [3][5]bool =
   [ [true,  false, false, false, false]
   , [false, false, true,  false, false]
   , [false, false, false, false, true ]
   ]
 
+-- Tie case: auto chooses JVP when column and row color counts are equal.
 -- ==
--- entry: test_sparse_auto_ex3_tie_prefers_jvp
+-- entry: test_sparse_auto_tie_prefers_jvp
 -- input  { [1.0f64, 7.0f64, 3.0f64, 9.0f64, -2.0f64] }
 -- output { true }
-entry test_sparse_auto_ex3_tie_prefers_jvp (x:[5]f64) : bool =
+entry test_sparse_auto_tie_prefers_jvp (x:[5]f64) : bool =
   let eps = 1e-9f64
-  let jd = mask_with_pattern pat_ex3 (Dense.jac_dense_jvp f_ex3 x)
+  let jd = mask_with_pattern pat_tie_choice (Dense.jac_dense_jvp f_tie_choice x)
   let (ja, use_jvp, num_col_colors, num_row_colors) =
-    Auto.jac_auto_dense_with_info f_ex3 pat_ex3 x
+    Auto.jac_auto_dense_with_info f_tie_choice pat_tie_choice x
   in approx_eq_mat ja jd eps
      && use_jvp
      && num_col_colors == 1i64
      && num_row_colors == 1i64
 
--- ==
--- entry: test_sparse_auto_ex3_csr_tie_prefers_jvp
--- input  { [1.0f64, 7.0f64, 3.0f64, 9.0f64, -2.0f64] }
--- output { true }
-entry test_sparse_auto_ex3_csr_tie_prefers_jvp (x:[5]f64) : bool =
-  let eps = 1e-9f64
-  let jd = mask_with_pattern pat_ex3 (Dense.jac_dense_jvp f_ex3 x)
-  let ((row_offs, row_idx, vals), use_jvp, num_col_colors, num_row_colors) =
-    Auto.jac_auto_csr_with_info f_ex3 pat_ex3 x
-  let ja = csr_to_dense row_offs row_idx vals
-  in approx_eq_mat ja jd eps
-     && use_jvp
-     && num_col_colors == 1i64
-     && num_row_colors == 1i64
-
--- Example 4: zero pattern / constant function
-def f_ex4_zero (_x:[4]f64) : [2]f64 =
+-- Example 4: zero sparsity pattern and constant function.
+def f_zero (_x:[4]f64) : [2]f64 =
   [10.0f64, -3.0f64]
 
-def pat_ex4_zero : [2][4]bool =
+def pat_zero : [2][4]bool =
   [ [false, false, false, false]
   , [false, false, false, false]
   ]
 
--- ==
--- entry: test_sparse_auto_zero_pattern_dense
--- input  { [8.0f64, -2.0f64, 5.0f64, 11.0f64] }
--- output { true }
-entry test_sparse_auto_zero_pattern_dense (x:[4]f64) : bool =
-  let eps = 1e-9f64
-  let jd = mask_with_pattern pat_ex4_zero (Dense.jac_dense_jvp f_ex4_zero x)
-  let ja = Auto.jac_auto_dense f_ex4_zero pat_ex4_zero x
-  in approx_eq_mat ja jd eps
-
+-- Zero pattern: auto CSR output reconstructs to the all-zero masked Jacobian.
 -- ==
 -- entry: test_sparse_auto_zero_pattern_csr
 -- input  { [8.0f64, -2.0f64, 5.0f64, 11.0f64] }
 -- output { true }
 entry test_sparse_auto_zero_pattern_csr (x:[4]f64) : bool =
   let eps = 1e-9f64
-  let jd = mask_with_pattern pat_ex4_zero (Dense.jac_dense_jvp f_ex4_zero x)
-  let (row_offs, row_idx, vals) = Auto.jac_auto_csr f_ex4_zero pat_ex4_zero x
+  let jd = mask_with_pattern pat_zero (Dense.jac_dense_jvp f_zero x)
+  let (row_offs, row_idx, vals) =
+    Auto.jac_auto_csr f_zero pat_zero x
   let ja = csr_to_dense row_offs row_idx vals
   in approx_eq_mat ja jd eps
 
--- Example 5: mixed nonlinear case with empty row and unused column
--- VJP should be preferred here: columns need 3 colors, rows need 2.
-def f_ex5 (x:[6]f64) : [5]f64 =
+-- Example 5: mixed nonlinear case with empty row and unused column.
+-- VJP should be preferred: column coloring needs 3 colors, row coloring needs 2.
+def f_from_csr (x:[6]f64) : [5]f64 =
   let y0 = x[0] * x[1] + x[5]
   let y1 = 2.0f64 * x[2]
   let y2 = x[1] + x[3]
@@ -201,7 +182,7 @@ def f_ex5 (x:[6]f64) : [5]f64 =
   let y4 = 11.0f64
   in [y0, y1, y2, y3, y4]
 
-def pat_ex5 : [5][6]bool =
+def pat_from_csr : [5][6]bool =
   [ [true,  true,  false, false, false, true ]
   , [false, false, true,  false, false, false]
   , [false, true,  false, true,  false, false]
@@ -209,50 +190,23 @@ def pat_ex5 : [5][6]bool =
   , [false, false, false, false, false, false]
   ]
 
+-- CSR-input API: auto uses an existing CSR pattern and selects VJP correctly.
 -- ==
--- entry: test_sparse_auto_ex5_dense_with_info
+-- entry: test_sparse_auto_csr_from_csr_with_info
 -- input  { [2.0f64, -3.0f64, 4.0f64, 1.5f64, 99.0f64, -2.0f64] }
 -- output { true }
-entry test_sparse_auto_ex5_dense_with_info (x:[6]f64) : bool =
-  let eps = 1e-9f64
-  let jd = mask_with_pattern pat_ex5 (Dense.jac_dense_jvp f_ex5 x)
-  let (ja, use_jvp, num_col_colors, num_row_colors) =
-    Auto.jac_auto_dense_with_info f_ex5 pat_ex5 x
-  in approx_eq_mat ja jd eps
-     && !use_jvp
-     && num_col_colors == 3i64
-     && num_row_colors == 2i64
-
--- ==
--- entry: test_sparse_auto_ex5_csr_with_info
--- input  { [2.0f64, -3.0f64, 4.0f64, 1.5f64, 99.0f64, -2.0f64] }
--- output { true }
-entry test_sparse_auto_ex5_csr_with_info (x:[6]f64) : bool =
-  let eps = 1e-9f64
-  let jd = mask_with_pattern pat_ex5 (Dense.jac_dense_jvp f_ex5 x)
-  let ((row_offs, row_idx, vals), use_jvp, num_col_colors, num_row_colors) =
-    Auto.jac_auto_csr_with_info f_ex5 pat_ex5 x
-  let ja = csr_to_dense row_offs row_idx vals
-  in approx_eq_mat ja jd eps
-     && !use_jvp
-     && num_col_colors == 3i64
-     && num_row_colors == 2i64
-
--- ==
--- entry: test_sparse_auto_csr_from_csr_ex5_with_info
--- input  { [2.0f64, -3.0f64, 4.0f64, 1.5f64, 99.0f64, -2.0f64] }
--- output { true }
-entry test_sparse_auto_csr_from_csr_ex5_with_info (x:[6]f64) : bool =
+entry test_sparse_auto_csr_from_csr_with_info (x:[6]f64) : bool =
   let eps = 1e-9f64
 
   let jd =
-    mask_with_pattern pat_ex5 (Dense.jac_dense_jvp f_ex5 x)
+    mask_with_pattern pat_from_csr (Dense.jac_dense_jvp f_from_csr x)
 
   let ((row_offs, row_idx), (col_offs, col_idx)) =
-    CSR.csr_bipartite_from_pattern pat_ex5
+    CSR.csr_bipartite_from_pattern pat_from_csr
 
   let ((out_row_offs, out_row_idx, vals), use_jvp, num_col_colors, num_row_colors) =
-    Auto.jac_auto_csr_from_csr_with_info f_ex5 row_offs row_idx col_offs col_idx x
+    Auto.jac_auto_csr_from_csr_with_info
+      f_from_csr row_offs row_idx col_offs col_idx x
 
   let ja =
     csr_to_dense out_row_offs out_row_idx vals
@@ -261,5 +215,3 @@ entry test_sparse_auto_csr_from_csr_ex5_with_info (x:[6]f64) : bool =
      && !use_jvp
      && num_col_colors == 3i64
      && num_row_colors == 2i64
-
-
