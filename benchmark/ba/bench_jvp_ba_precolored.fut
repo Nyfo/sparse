@@ -28,9 +28,9 @@ entry mk_ba_csr_test_with_d2_colors (num_cams:i64) (num_points:i64) (num_obs:i64
 -- ==
 -- entry: bench_precolored_jvp_ba_d2_compressed
 -- script input { mk_ba_csr_test_with_d2_colors 32 128 2048 }
+-- script input { mk_ba_csr_test_with_d2_colors 48 192 4096 }
 -- script input { mk_ba_csr_test_with_d2_colors 64 256 8192 }
 -- script input { mk_ba_csr_test_with_d2_colors 80 320 12288 }
--- script input { mk_ba_csr_test_with_d2_colors 96 384 16384 }
 entry bench_precolored_jvp_ba_d2_compressed
   (num_cams:i64) (num_points:i64) (num_obs:i64)
   (_row_offs:[3*num_obs+1]i64) (_row_idx:[]i64)
@@ -46,9 +46,9 @@ entry bench_precolored_jvp_ba_d2_compressed
 -- ==
 -- entry: bench_precolored_jvp_ba_d2_csr
 -- script input { mk_ba_csr_test_with_d2_colors 32 128 2048 }
+-- script input { mk_ba_csr_test_with_d2_colors 48 192 4096 }
 -- script input { mk_ba_csr_test_with_d2_colors 64 256 8192 }
 -- script input { mk_ba_csr_test_with_d2_colors 80 320 12288 }
--- script input { mk_ba_csr_test_with_d2_colors 96 384 16384 }
 entry bench_precolored_jvp_ba_d2_csr
   (num_cams:i64) (num_points:i64) (num_obs:i64)
   (row_offs:[3*num_obs+1]i64) (row_idx:[]i64)

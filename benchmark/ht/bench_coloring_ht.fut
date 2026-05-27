@@ -27,9 +27,9 @@ entry mk_ht_csr_test (num_bones:i64) (num_obs:i64) (num_vertices:i64)
 -- ==
 -- entry: bench_color_ht_d2
 -- script input { mk_ht_csr_test 22 512 2048 }
+-- script input { mk_ht_csr_test 22 1024 4096 }
 -- script input { mk_ht_csr_test 22 2048 8192 }
 -- script input { mk_ht_csr_test 22 4096 16384 }
--- script input { mk_ht_csr_test 22 8192 32768 }
 entry bench_color_ht_d2
   (_num_bones:i64) (num_obs:i64) (_num_vertices:i64)
   (row_offs:[3*num_obs + 1]i64) (row_idx:[]i64)
@@ -40,9 +40,9 @@ entry bench_color_ht_d2
 -- ==
 -- entry: bench_color_ht_bgpc
 -- script input { mk_ht_csr_test 22 512 2048 }
+-- script input { mk_ht_csr_test 22 1024 4096 }
 -- script input { mk_ht_csr_test 22 2048 8192 }
 -- script input { mk_ht_csr_test 22 4096 16384 }
--- script input { mk_ht_csr_test 22 8192 32768 }
 entry bench_color_ht_bgpc
   (_num_bones:i64) (num_obs:i64) (_num_vertices:i64)
   (row_offs:[3*num_obs + 1]i64) (row_idx:[]i64)

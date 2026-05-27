@@ -50,12 +50,12 @@ entry color_counts_ht : []i64 =
   [ ht_d2_colors 22i64 512i64 2048i64
   , ht_bgpc_colors 22i64 512i64 2048i64
 
+  , ht_d2_colors 22i64 1024i64 4096i64
+  , ht_bgpc_colors 22i64 1024i64 4096i64
+
   , ht_d2_colors 22i64 2048i64 8192i64
   , ht_bgpc_colors 22i64 2048i64 8192i64
 
   , ht_d2_colors 22i64 4096i64 16384i64
   , ht_bgpc_colors 22i64 4096i64 16384i64
-
-  , ht_d2_colors 22i64 8192i64 32768i64
-  , ht_bgpc_colors 22i64 8192i64 32768i64
   ]

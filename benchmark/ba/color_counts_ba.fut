@@ -32,19 +32,13 @@ entry color_counts_ba : []i64 =
   [ ba_d2_colors 32i64 128i64 2048i64
   , ba_bgpc_colors 32i64 128i64 2048i64
 
+  , ba_d2_colors 48i64 192i64 4096i64
+  , ba_bgpc_colors 48i64 192i64 4096i64
+
   , ba_d2_colors 64i64 256i64 8192i64
   , ba_bgpc_colors 64i64 256i64 8192i64
 
   , ba_d2_colors 80i64 320i64 12288i64
   , ba_bgpc_colors 80i64 320i64 12288i64
-
-  , ba_d2_colors 96i64 384i64 16384i64
-  , ba_bgpc_colors 96i64 384i64 16384i64
-
-  , ba_d2_colors 128i64 512i64 32768i64
-  , ba_bgpc_colors 128i64 512i64 32768i64
-
-  , ba_d2_colors 160i64 640i64 40960i64
-  , ba_bgpc_colors 160i64 640i64 40960i64
   ]
 

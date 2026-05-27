@@ -17,11 +17,9 @@ entry mk_ba_csr_test (num_cams:i64) (num_points:i64) (num_obs:i64)
 -- ==
 -- entry: bench_color_ba_d2
 -- script input { mk_ba_csr_test 32 128 2048 }
+-- script input { mk_ba_csr_test 48 192 4096 }
 -- script input { mk_ba_csr_test 64 256 8192 }
 -- script input { mk_ba_csr_test 80 320 12288 }
--- script input { mk_ba_csr_test 96 384 16384 }
--- script input { mk_ba_csr_test 128 512 32768 }
--- script input { mk_ba_csr_test 160 640 40960 }
 entry bench_color_ba_d2
   (num_cams:i64) (num_points:i64) (num_obs:i64)
   (row_offs:[3*num_obs+1]i64) (row_idx:[]i64)
@@ -32,11 +30,9 @@ entry bench_color_ba_d2
 -- ==
 -- entry: bench_color_ba_bgpc
 -- script input { mk_ba_csr_test 32 128 2048 }
+-- script input { mk_ba_csr_test 48 192 4096 }
 -- script input { mk_ba_csr_test 64 256 8192 }
 -- script input { mk_ba_csr_test 80 320 12288 }
--- script input { mk_ba_csr_test 96 384 16384 }
--- script input { mk_ba_csr_test 128 512 32768 }
--- script input { mk_ba_csr_test 160 640 40960 }
 entry bench_color_ba_bgpc
   (num_cams:i64) (num_points:i64) (num_obs:i64)
   (row_offs:[3*num_obs+1]i64) (row_idx:[]i64)
