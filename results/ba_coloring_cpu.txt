@@ -1,0 +1,15 @@
+Compiling benchmark/ba/bench_coloring_ba.fut...
+Reporting arithmetic mean runtime of at least 10 runs for each dataset (min 0.5s).
+More runs automatically performed for up to 300s to ensure accurate measurement.
+
+benchmark/ba/bench_coloring_ba.fut:bench_color_ba_d2 (no tuning file):
+mk_ba_csr_test 32i32 128i32 2048i32:        2503μs (95% CI: [    2498.0,     2512.2])
+mk_ba_csr_test 48i32 192i32 4096i32:        5032μs (95% CI: [    5015.5,     5106.3])
+mk_ba_csr_test 64i32 256i32 8192i32:       10258μs (95% CI: [   10223.8,    10379.5])
+mk_ba_csr_test 80i32 320i32 12288i32:       8669μs (95% CI: [    8657.2,     8682.2])
+
+benchmark/ba/bench_coloring_ba.fut:bench_color_ba_bgpc (no tuning file):
+mk_ba_csr_test 32i32 128i32 2048i32:       16402μs (95% CI: [   15318.5,    18476.5])
+mk_ba_csr_test 48i32 192i32 4096i32:       29395μs (95% CI: [   28276.7,    30948.7])
+mk_ba_csr_test 64i32 256i32 8192i32:       38062μs (95% CI: [   37014.1,    39017.9])
+mk_ba_csr_test 80i32 320i32 12288i32:      70003μs (95% CI: [   65577.4,    75631.6])

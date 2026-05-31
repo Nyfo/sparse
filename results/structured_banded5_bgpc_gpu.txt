@@ -1,0 +1,8 @@
+Compiling benchmark/bench_jvp_structured.fut...
+Reporting arithmetic mean runtime of at least 10 runs for each dataset (min 0.5s).
+More runs automatically performed for up to 300s to ensure accurate measurement.
+
+benchmark/bench_jvp_structured.fut:bench_sparse_jvp_banded5_bgpc_compressed (no tuning file):
+mk_banded_csr_test 512i32 16384i32:       17629μs (95% CI: [   12670.3,    22122.4])
+mk_banded_csr_test 1024i32 32768i32:      18722μs (95% CI: [   15852.3,    21464.2])
+mk_banded_csr_test 2048i32 65536i32:      18752μs (95% CI: [   16212.4,    21165.4])

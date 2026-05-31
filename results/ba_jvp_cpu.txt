@@ -1,0 +1,33 @@
+Compiling benchmark/ba/bench_jvp_ba_simple.fut...
+Reporting arithmetic mean runtime of at least 10 runs for each dataset (min 0.5s).
+More runs automatically performed for up to 300s to ensure accurate measurement.
+
+benchmark/ba/bench_jvp_ba_simple.fut:bench_dense_jvp_ba (no tuning file):
+mk_ba_csr_test 32i32 128i32 2048i32:       70585μs (95% CI: [   69360.9,    73244.7])
+mk_ba_csr_test 48i32 192i32 4096i32:      117360μs (95% CI: [  116554.2,   118090.3])
+mk_ba_csr_test 64i32 256i32 8192i32:      358109μs (95% CI: [  337083.4,   379403.2])
+mk_ba_csr_test 80i32 320i32 12288i32:     840124μs (95% CI: [  808453.9,   883394.9])
+
+benchmark/ba/bench_jvp_ba_simple.fut:bench_sparse_jvp_ba_d2_compressed (no tuning file):
+mk_ba_csr_test 32i32 128i32 2048i32:        2953μs (95% CI: [    2927.4,     3024.9])
+mk_ba_csr_test 48i32 192i32 4096i32:        5953μs (95% CI: [    5788.7,     6117.6])
+mk_ba_csr_test 64i32 256i32 8192i32:       12302μs (95% CI: [   11458.3,    14121.8])
+mk_ba_csr_test 80i32 320i32 12288i32:      17019μs (95% CI: [   15744.1,    18213.4])
+
+benchmark/ba/bench_jvp_ba_simple.fut:bench_sparse_jvp_ba_d2_csr (no tuning file):
+mk_ba_csr_test 32i32 128i32 2048i32:        4761μs (95% CI: [    4718.0,     4846.5])
+mk_ba_csr_test 48i32 192i32 4096i32:        7895μs (95% CI: [    7261.1,     8728.6])
+mk_ba_csr_test 64i32 256i32 8192i32:       16900μs (95% CI: [   16199.2,    17647.5])
+mk_ba_csr_test 80i32 320i32 12288i32:      24125μs (95% CI: [   21506.5,    26422.5])
+
+benchmark/ba/bench_jvp_ba_simple.fut:bench_sparse_jvp_ba_bgpc_compressed (no tuning file):
+mk_ba_csr_test 32i32 128i32 2048i32:       18140μs (95% CI: [   17625.8,    18672.1])
+mk_ba_csr_test 48i32 192i32 4096i32:       32103μs (95% CI: [   30344.6,    34225.3])
+mk_ba_csr_test 64i32 256i32 8192i32:       56071μs (95% CI: [   52133.4,    59636.1])
+mk_ba_csr_test 80i32 320i32 12288i32:      79803μs (95% CI: [   77782.2,    82074.3])
+
+benchmark/ba/bench_jvp_ba_simple.fut:bench_sparse_jvp_ba_bgpc_csr (no tuning file):
+mk_ba_csr_test 32i32 128i32 2048i32:       21390μs (95% CI: [   21065.7,    21731.5])
+mk_ba_csr_test 48i32 192i32 4096i32:       33039μs (95% CI: [   32108.7,    33478.2])
+mk_ba_csr_test 64i32 256i32 8192i32:       58926μs (95% CI: [   56551.2,    61399.3])
+mk_ba_csr_test 80i32 320i32 12288i32:      86839μs (95% CI: [   82942.5,    90712.7])
