@@ -63,7 +63,7 @@ entry bench_adbench_ht_calculate_jacobian
   (correspondences:[num_obs]i32)
   (points:[3][num_obs]f64)
   (theta:[HT.theta_count]f64)
-  (us:[num_us]f64) =
+  (us:[2*num_obs]f64) =
   HT.calculate_jacobian
     parents
     base_relatives
