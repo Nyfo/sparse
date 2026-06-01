@@ -118,7 +118,7 @@ entry bench_sparse_jvp_ht_d2_csr
   (correspondences:[num_obs]i32)
   (points:[3][num_obs]f64)
   (x:[HT.theta_count + 2*num_obs]f64)
-  : []f64 =
+  : ([3*num_obs + 1]i64, []i64, []f64) =
   let colors =
     D2.partial_d2_color_cols row_offs row_idx col_offs col_idx
 
@@ -138,7 +138,10 @@ entry bench_sparse_jvp_ht_d2_csr
       colors
       x
 
-  in Sparse.compressed_to_csr_vals row_offs row_idx colors ys
+  let vals =
+    Sparse.compressed_to_csr_vals row_offs row_idx colors ys
+
+  in (row_offs, row_idx, vals)
 
 -- ==
 -- entry: bench_sparse_jvp_ht_bgpc_compressed
@@ -202,7 +205,7 @@ entry bench_sparse_jvp_ht_bgpc_csr
   (correspondences:[num_obs]i32)
   (points:[3][num_obs]f64)
   (x:[HT.theta_count + 2*num_obs]f64)
-  : []f64 =
+  : ([3*num_obs + 1]i64, []i64, []f64) =
   let colors =
     BGPC.vv_color_cols row_offs row_idx col_offs col_idx
 
@@ -222,4 +225,7 @@ entry bench_sparse_jvp_ht_bgpc_csr
       colors
       x
 
-  in Sparse.compressed_to_csr_vals row_offs row_idx colors ys
+  let vals =
+    Sparse.compressed_to_csr_vals row_offs row_idx colors ys
+
+  in (row_offs, row_idx, vals)
