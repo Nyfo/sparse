@@ -30,9 +30,9 @@ entry mk_stencil_csr_test (h:i64) (w:i64)
 
 -- ==
 -- entry: bench_dense_vjp_banded5
--- script input { mk_banded_csr_test 16384 512 }
--- script input { mk_banded_csr_test 32768 1024 }
--- script input { mk_banded_csr_test 65536 2048 }
+-- script input { mk_banded_csr_test 2048 4096 }
+-- script input { mk_banded_csr_test 4096 8192 }
+-- script input { mk_banded_csr_test 8192 16384 }
 entry bench_dense_vjp_banded5 (m:i64) (n:i64)
   (_row_offs:[m+1]i64) (_row_idx:[]i64)
   (_col_offs:[n+1]i64) (_col_idx:[]i64)
@@ -42,9 +42,9 @@ entry bench_dense_vjp_banded5 (m:i64) (n:i64)
 
 -- ==
 -- entry: bench_sparse_vjp_banded5_d2_compressed
--- script input { mk_banded_csr_test 16384 512 }
--- script input { mk_banded_csr_test 32768 1024 }
--- script input { mk_banded_csr_test 65536 2048 }
+-- script input { mk_banded_csr_test 2048 4096 }
+-- script input { mk_banded_csr_test 4096 8192 }
+-- script input { mk_banded_csr_test 8192 16384 }
 entry bench_sparse_vjp_banded5_d2_compressed (m:i64) (n:i64)
   (row_offs:[m+1]i64) (row_idx:[]i64)
   (col_offs:[n+1]i64) (col_idx:[]i64)
@@ -56,9 +56,9 @@ entry bench_sparse_vjp_banded5_d2_compressed (m:i64) (n:i64)
 
 -- ==
 -- entry: bench_sparse_vjp_to_csr_banded5_d2
--- script input { mk_banded_csr_test 16384 512 }
--- script input { mk_banded_csr_test 32768 1024 }
--- script input { mk_banded_csr_test 65536 2048 }
+-- script input { mk_banded_csr_test 2048 4096 }
+-- script input { mk_banded_csr_test 4096 8192 }
+-- script input { mk_banded_csr_test 8192 16384 }
 entry bench_sparse_vjp_to_csr_banded5_d2 (m:i64) (n:i64)
   (row_offs:[m+1]i64) (row_idx:[]i64)
   (col_offs:[n+1]i64) (col_idx:[]i64)
@@ -70,9 +70,9 @@ entry bench_sparse_vjp_to_csr_banded5_d2 (m:i64) (n:i64)
 
 -- ==
 -- entry: bench_sparse_vjp_banded5_bgpc_compressed
--- script input { mk_banded_csr_test 16384 512 }
--- script input { mk_banded_csr_test 32768 1024 }
--- script input { mk_banded_csr_test 65536 2048 }
+-- script input { mk_banded_csr_test 2048 4096 }
+-- script input { mk_banded_csr_test 4096 8192 }
+-- script input { mk_banded_csr_test 8192 16384 }
 entry bench_sparse_vjp_banded5_bgpc_compressed (m:i64) (n:i64)
   (row_offs:[m+1]i64) (row_idx:[]i64)
   (col_offs:[n+1]i64) (col_idx:[]i64)
@@ -84,9 +84,9 @@ entry bench_sparse_vjp_banded5_bgpc_compressed (m:i64) (n:i64)
 
 -- ==
 -- entry: bench_sparse_vjp_to_csr_banded5_bgpc
--- script input { mk_banded_csr_test 16384 512 }
--- script input { mk_banded_csr_test 32768 1024 }
--- script input { mk_banded_csr_test 65536 2048 }
+-- script input { mk_banded_csr_test 2048 4096 }
+-- script input { mk_banded_csr_test 4096 8192 }
+-- script input { mk_banded_csr_test 8192 16384 }
 entry bench_sparse_vjp_to_csr_banded5_bgpc (m:i64) (n:i64)
   (row_offs:[m+1]i64) (row_idx:[]i64)
   (col_offs:[n+1]i64) (col_idx:[]i64)
