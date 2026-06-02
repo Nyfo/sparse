@@ -1,0 +1,9 @@
+Compiling benchmark/ba/bench_jvp_ba_simple.fut...
+Reporting arithmetic mean runtime of at least 10 runs for each dataset (min 0.5s).
+More runs automatically performed for up to 300s to ensure accurate measurement.
+
+benchmark/ba/bench_jvp_ba_simple.fut:bench_sparse_jvp_ba_d2_compressed (no tuning file):
+mk_ba_csr_test 32i32 128i32 2048i32:        2864μs (95% CI: [    2850.8,     2885.6])
+mk_ba_csr_test 48i32 192i32 4096i32:        5634μs (95% CI: [    5539.0,     5916.4])
+mk_ba_csr_test 64i32 256i32 8192i32:        7077μs (95% CI: [    6915.7,     7668.7])
+mk_ba_csr_test 80i32 320i32 12288i32:      16884μs (95% CI: [   16127.9,    17509.1])

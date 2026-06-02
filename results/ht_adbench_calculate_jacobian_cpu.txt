@@ -1,0 +1,9 @@
+Compiling benchmark/ht/bench_adbench_ht.fut...
+Reporting arithmetic mean runtime of at least 10 runs for each dataset (min 0.5s).
+More runs automatically performed for up to 300s to ensure accurate measurement.
+
+benchmark/ht/bench_adbench_ht.fut:bench_adbench_ht_calculate_jacobian (no tuning file):
+mk_ht_adbench_test 22i32 512i32 2048i32:       22777μs (95% CI: [   22045.3,    25508.4])
+mk_ht_adbench_test 22i32 1024i32 4096i32:      27894μs (95% CI: [   27492.7,    28400.1])
+mk_ht_adbench_test 22i32 2048i32 8192i32:      40924μs (95% CI: [   39982.0,    41980.1])
+mk_ht_adbench_test 22i32 4096i32 16384i32:      69831μs (95% CI: [   69157.4,    70580.1])

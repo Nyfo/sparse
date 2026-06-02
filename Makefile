@@ -81,11 +81,13 @@ clean:
 	      benchmark/ba/bench_jvp_ba_precolored \
 	      benchmark/ba/bench_coloring_ba \
 	      benchmark/ba/color_counts_ba \
+	      benchmark/ba/bench_adbench_ba \
 	      benchmark/ba/test_jvp_ba_correctness
 	rm -f benchmark/ht/bench_jvp_ht_simple \
 	      benchmark/ht/bench_jvp_ht_precolored \
 	      benchmark/ht/bench_coloring_ht \
 	      benchmark/ht/color_counts_ht \
+	      benchmark/ht/bench_adbench_ht \
 	      benchmark/ht/test_jvp_ht_correctness
 	rm -f results/color_counts_ba \
 	      results/color_counts_ht \

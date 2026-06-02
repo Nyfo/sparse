@@ -1,0 +1,9 @@
+Compiling benchmark/ba/bench_adbench_ba.fut...
+Reporting arithmetic mean runtime of at least 10 runs for each dataset (min 0.5s).
+More runs automatically performed for up to 300s to ensure accurate measurement.
+
+benchmark/ba/bench_adbench_ba.fut:bench_adbench_ba_calculate_jacobian (no tuning file):
+mk_ba_adbench_test 32i32 128i32 2048i32:         805μs (95% CI: [     801.6,      809.6])
+mk_ba_adbench_test 48i32 192i32 4096i32:        2482μs (95% CI: [    2472.6,     2492.4])
+mk_ba_adbench_test 64i32 256i32 8192i32:        6154μs (95% CI: [    6122.1,     6184.8])
+mk_ba_adbench_test 80i32 320i32 12288i32:       1619μs (95% CI: [    1613.4,     1628.6])

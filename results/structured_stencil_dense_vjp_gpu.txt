@@ -1,0 +1,7 @@
+Compiling benchmark/bench_vjp_structured.fut...
+Reporting arithmetic mean runtime of at least 10 runs for each dataset (min 0.5s).
+More runs automatically performed for up to 300s to ensure accurate measurement.
+
+benchmark/bench_vjp_structured.fut:bench_dense_vjp_stencil (no tuning file):
+mk_stencil_csr_test 64i32 64i32:           4090μs (95% CI: [    4048.5,     4170.4])
+mk_stencil_csr_test 96i32 96i32:     
