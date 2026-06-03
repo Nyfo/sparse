@@ -1,0 +1,3 @@
+bench_cpu.sh
+bench_gpu.sh
+slurm-*.out

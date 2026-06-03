@@ -1,8 +1,10 @@
 .PHONY: test test-gpu \
         bench-structured-cpu bench-structured-gpu \
+        bench-vjp-structured-cpu bench-vjp-structured-gpu \
         bench-ba-cpu bench-ba-gpu \
         bench-ht-cpu bench-ht-gpu \
         bench-coloring bench-precolored \
+        bench-adbench-cpu bench-adbench-gpu \
         clean
 
 # section: tests
@@ -26,7 +28,7 @@ test-gpu:
 	futhark test --backend=cuda test/test_sparse_jacobian_vjp.fut
 	futhark test --backend=cuda test/test_sparse_jacobian_auto.fut
 
-# section: end-to-end benchmarks
+# section: end-to-end JVP benchmarks
 bench-structured-cpu:
 	futhark bench --backend=multicore --runs=10 benchmark/bench_jvp_structured.fut | tee results/structured_jvp_cpu.txt
 
@@ -50,6 +52,16 @@ bench-ht-gpu:
 	futhark bench --backend=cuda --runs=10 --entry-point=bench_dense_jvp_ht benchmark/ht/bench_jvp_ht_simple.fut | tee results/ht_dense_gpu.txt
 	futhark bench --backend=cuda --runs=10 --entry-point=bench_sparse_jvp_ht_bgpc_compressed benchmark/ht/bench_jvp_ht_simple.fut | tee results/ht_bgpc_gpu.txt
 
+# section: structured VJP benchmarks
+bench-vjp-structured-cpu:
+	futhark bench --backend=multicore --runs=10 benchmark/bench_vjp_structured.fut | tee results/structured_vjp_cpu.txt
+
+bench-vjp-structured-gpu:
+	futhark bench --backend=cuda --runs=10 --entry-point=bench_dense_vjp_banded5 benchmark/bench_vjp_structured.fut | tee results/structured_banded5_dense_vjp_gpu.txt
+	futhark bench --backend=cuda --runs=10 --entry-point=bench_dense_vjp_stencil benchmark/bench_vjp_structured.fut | tee results/structured_stencil_dense_vjp_gpu.txt
+	futhark bench --backend=cuda --runs=10 --entry-point=bench_sparse_vjp_banded5_bgpc_compressed benchmark/bench_vjp_structured.fut | tee results/structured_banded5_bgpc_vjp_gpu.txt
+	futhark bench --backend=cuda --runs=10 --entry-point=bench_sparse_vjp_stencil_bgpc_compressed benchmark/bench_vjp_structured.fut | tee results/structured_stencil_bgpc_vjp_gpu.txt
+
 # section: breakdown benchmarks
 bench-coloring:
 	futhark bench --backend=multicore --runs=10 benchmark/bench_coloring_structured.fut | tee results/structured_coloring_cpu.txt
@@ -60,6 +72,19 @@ bench-precolored:
 	futhark bench --backend=multicore --runs=10 benchmark/bench_jvp_precolored_structured.fut | tee results/structured_precolored_cpu.txt
 	futhark bench --backend=multicore --runs=10 benchmark/ba/bench_jvp_ba_precolored.fut | tee results/ba_precolored_cpu.txt
 	futhark bench --backend=multicore --runs=10 benchmark/ht/bench_jvp_ht_precolored.fut | tee results/ht_precolored_cpu.txt
+
+# section: ADBench comparison benchmarks
+bench-adbench-cpu:
+	futhark bench --backend=multicore --runs=10 benchmark/ba/bench_adbench_ba.fut | tee results/ba_adbench_calculate_jacobian_cpu.txt
+	futhark bench --backend=multicore --runs=10 --entry-point=bench_sparse_jvp_ba_d2_compressed benchmark/ba/bench_jvp_ba_simple.fut | tee results/ba_d2_compressed_cpu_for_adbench.txt
+	futhark bench --backend=multicore --runs=10 --entry-point=bench_sparse_jvp_ba_d2_csr benchmark/ba/bench_jvp_ba_simple.fut | tee results/ba_d2_csr_cpu.txt
+	futhark bench --backend=multicore --runs=10 benchmark/ht/bench_adbench_ht.fut | tee results/ht_adbench_calculate_jacobian_cpu.txt
+	futhark bench --backend=multicore --runs=10 --entry-point=bench_sparse_jvp_ht_d2_compressed benchmark/ht/bench_jvp_ht_simple.fut | tee results/ht_d2_compressed_cpu_for_adbench.txt
+	futhark bench --backend=multicore --runs=10 --entry-point=bench_sparse_jvp_ht_d2_csr benchmark/ht/bench_jvp_ht_simple.fut | tee results/ht_d2_csr_cpu.txt
+
+bench-adbench-gpu:
+	futhark bench --backend=cuda --runs=10 benchmark/ba/bench_adbench_ba.fut | tee results/ba_adbench_calculate_jacobian_gpu.txt
+	futhark bench --backend=cuda --runs=10 benchmark/ht/bench_adbench_ht.fut | tee results/ht_adbench_calculate_jacobian_gpu.txt
 
 # section: cleanup
 clean:
