@@ -33,6 +33,8 @@ entry mk_stencil_csr_test (h:i64) (w:i64)
 -- script input { mk_banded_csr_test 512 16384 }
 -- script input { mk_banded_csr_test 1024 32768 }
 -- script input { mk_banded_csr_test 2048 65536 }
+-- script input { mk_banded_csr_test 3072 98304 }
+-- script input { mk_banded_csr_test 4096 131072 }
 entry bench_dense_jvp_banded5 (m:i64) (n:i64)
   (_row_offs:[m+1]i64) (_row_idx:[]i64)
   (_col_offs:[n+1]i64) (_col_idx:[]i64)
@@ -45,6 +47,8 @@ entry bench_dense_jvp_banded5 (m:i64) (n:i64)
 -- script input { mk_banded_csr_test 512 16384 }
 -- script input { mk_banded_csr_test 1024 32768 }
 -- script input { mk_banded_csr_test 2048 65536 }
+-- script input { mk_banded_csr_test 3072 98304 }
+-- script input { mk_banded_csr_test 4096 131072 }
 entry bench_sparse_jvp_banded5_d2_compressed (m:i64) (n:i64)
   (row_offs:[m+1]i64) (row_idx:[]i64)
   (col_offs:[n+1]i64) (col_idx:[]i64)
@@ -59,6 +63,8 @@ entry bench_sparse_jvp_banded5_d2_compressed (m:i64) (n:i64)
 -- script input { mk_banded_csr_test 512 16384 }
 -- script input { mk_banded_csr_test 1024 32768 }
 -- script input { mk_banded_csr_test 2048 65536 }
+-- script input { mk_banded_csr_test 3072 98304 }
+-- script input { mk_banded_csr_test 4096 131072 }
 entry bench_sparse_jvp_to_csr_banded5_d2 (m:i64) (n:i64)
   (row_offs:[m+1]i64) (row_idx:[]i64)
   (col_offs:[n+1]i64) (col_idx:[]i64)
@@ -73,6 +79,8 @@ entry bench_sparse_jvp_to_csr_banded5_d2 (m:i64) (n:i64)
 -- script input { mk_banded_csr_test 512 16384 }
 -- script input { mk_banded_csr_test 1024 32768 }
 -- script input { mk_banded_csr_test 2048 65536 }
+-- script input { mk_banded_csr_test 3072 98304 }
+-- script input { mk_banded_csr_test 4096 131072 }
 entry bench_sparse_jvp_banded5_bgpc_compressed (m:i64) (n:i64)
   (row_offs:[m+1]i64) (row_idx:[]i64)
   (col_offs:[n+1]i64) (col_idx:[]i64)
@@ -87,6 +95,8 @@ entry bench_sparse_jvp_banded5_bgpc_compressed (m:i64) (n:i64)
 -- script input { mk_banded_csr_test 512 16384 }
 -- script input { mk_banded_csr_test 1024 32768 }
 -- script input { mk_banded_csr_test 2048 65536 }
+-- script input { mk_banded_csr_test 3072 98304 }
+-- script input { mk_banded_csr_test 4096 131072 }
 entry bench_sparse_jvp_to_csr_banded5_bgpc (m:i64) (n:i64)
   (row_offs:[m+1]i64) (row_idx:[]i64)
   (col_offs:[n+1]i64) (col_idx:[]i64)
@@ -101,6 +111,8 @@ entry bench_sparse_jvp_to_csr_banded5_bgpc (m:i64) (n:i64)
 -- script input { mk_stencil_csr_test 64 64 }
 -- script input { mk_stencil_csr_test 96 96 }
 -- script input { mk_stencil_csr_test 128 128 }
+-- script input { mk_stencil_csr_test 160 160 }
+-- script input { mk_stencil_csr_test 192 192 }
 entry bench_dense_jvp_stencil (h:i64) (w:i64)
   (_row_offs:[h*w+1]i64) (_row_idx:[]i64)
   (_col_offs:[h*w+1]i64) (_col_idx:[]i64)
@@ -113,6 +125,8 @@ entry bench_dense_jvp_stencil (h:i64) (w:i64)
 -- script input { mk_stencil_csr_test 64 64 }
 -- script input { mk_stencil_csr_test 96 96 }
 -- script input { mk_stencil_csr_test 128 128 }
+-- script input { mk_stencil_csr_test 160 160 }
+-- script input { mk_stencil_csr_test 192 192 }
 entry bench_sparse_jvp_stencil_d2_compressed (h:i64) (w:i64)
   (row_offs:[h*w+1]i64) (row_idx:[]i64)
   (col_offs:[h*w+1]i64) (col_idx:[]i64)
@@ -127,6 +141,8 @@ entry bench_sparse_jvp_stencil_d2_compressed (h:i64) (w:i64)
 -- script input { mk_stencil_csr_test 64 64 }
 -- script input { mk_stencil_csr_test 96 96 }
 -- script input { mk_stencil_csr_test 128 128 }
+-- script input { mk_stencil_csr_test 160 160 }
+-- script input { mk_stencil_csr_test 192 192 }
 entry bench_sparse_jvp_to_csr_stencil_d2 (h:i64) (w:i64)
   (row_offs:[h*w+1]i64) (row_idx:[]i64)
   (col_offs:[h*w+1]i64) (col_idx:[]i64)
@@ -141,6 +157,8 @@ entry bench_sparse_jvp_to_csr_stencil_d2 (h:i64) (w:i64)
 -- script input { mk_stencil_csr_test 64 64 }
 -- script input { mk_stencil_csr_test 96 96 }
 -- script input { mk_stencil_csr_test 128 128 }
+-- script input { mk_stencil_csr_test 160 160 }
+-- script input { mk_stencil_csr_test 192 192 }
 entry bench_sparse_jvp_stencil_bgpc_compressed (h:i64) (w:i64)
   (row_offs:[h*w+1]i64) (row_idx:[]i64)
   (col_offs:[h*w+1]i64) (col_idx:[]i64)
@@ -155,6 +173,8 @@ entry bench_sparse_jvp_stencil_bgpc_compressed (h:i64) (w:i64)
 -- script input { mk_stencil_csr_test 64 64 }
 -- script input { mk_stencil_csr_test 96 96 }
 -- script input { mk_stencil_csr_test 128 128 }
+-- script input { mk_stencil_csr_test 160 160 }
+-- script input { mk_stencil_csr_test 192 192 }
 entry bench_sparse_jvp_to_csr_stencil_bgpc (h:i64) (w:i64)
   (row_offs:[h*w+1]i64) (row_idx:[]i64)
   (col_offs:[h*w+1]i64) (col_idx:[]i64)

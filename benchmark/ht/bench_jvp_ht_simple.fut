@@ -27,6 +27,7 @@ entry mk_ht_csr_test (num_bones:i64) (num_obs:i64) (num_vertices:i64)
 -- script input { mk_ht_csr_test 22 1024 4096 }
 -- script input { mk_ht_csr_test 22 2048 8192 }
 -- script input { mk_ht_csr_test 22 4096 16384 }
+-- script input { mk_ht_csr_test 22 8192 32768 }
 entry bench_dense_jvp_ht
   (num_bones:i64) (num_obs:i64) (num_vertices:i64)
   (_row_offs:[3*num_obs + 1]i64) (_row_idx:[]i64)
@@ -62,6 +63,7 @@ entry bench_dense_jvp_ht
 -- script input { mk_ht_csr_test 22 1024 4096 }
 -- script input { mk_ht_csr_test 22 2048 8192 }
 -- script input { mk_ht_csr_test 22 4096 16384 }
+-- script input { mk_ht_csr_test 22 8192 32768 }
 entry bench_sparse_jvp_ht_d2_compressed
   (num_bones:i64) (num_obs:i64) (num_vertices:i64)
   (row_offs:[3*num_obs + 1]i64) (row_idx:[]i64)
@@ -104,6 +106,7 @@ entry bench_sparse_jvp_ht_d2_compressed
 -- script input { mk_ht_csr_test 22 1024 4096 }
 -- script input { mk_ht_csr_test 22 2048 8192 }
 -- script input { mk_ht_csr_test 22 4096 16384 }
+-- script input { mk_ht_csr_test 22 8192 32768 }
 entry bench_sparse_jvp_ht_d2_csr
   (num_bones:i64) (num_obs:i64) (num_vertices:i64)
   (row_offs:[3*num_obs + 1]i64) (row_idx:[]i64)
@@ -149,6 +152,7 @@ entry bench_sparse_jvp_ht_d2_csr
 -- script input { mk_ht_csr_test 22 1024 4096 }
 -- script input { mk_ht_csr_test 22 2048 8192 }
 -- script input { mk_ht_csr_test 22 4096 16384 }
+-- script input { mk_ht_csr_test 22 8192 32768 }
 entry bench_sparse_jvp_ht_bgpc_compressed
   (num_bones:i64) (num_obs:i64) (num_vertices:i64)
   (row_offs:[3*num_obs + 1]i64) (row_idx:[]i64)
@@ -191,6 +195,7 @@ entry bench_sparse_jvp_ht_bgpc_compressed
 -- script input { mk_ht_csr_test 22 1024 4096 }
 -- script input { mk_ht_csr_test 22 2048 8192 }
 -- script input { mk_ht_csr_test 22 4096 16384 }
+-- script input { mk_ht_csr_test 22 8192 32768 }
 entry bench_sparse_jvp_ht_bgpc_csr
   (num_bones:i64) (num_obs:i64) (num_vertices:i64)
   (row_offs:[3*num_obs + 1]i64) (row_idx:[]i64)
