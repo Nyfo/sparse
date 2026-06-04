@@ -73,6 +73,14 @@ bench-precolored:
 	futhark bench --backend=multicore --runs=10 benchmark/ba/bench_jvp_ba_precolored.fut | tee results/ba_precolored_cpu.txt
 	futhark bench --backend=multicore --runs=10 benchmark/ht/bench_jvp_ht_precolored.fut | tee results/ht_precolored_cpu.txt
 
+bench-breakdown-cpu:
+	futhark bench --backend=multicore --runs=10 --entry-point=bench_sparse_jvp_banded5_d2_compressed benchmark/bench_jvp_structured.fut | tee results/breakdown_banded5_d2_full_cpu.txt
+	futhark bench --backend=multicore --runs=10 --entry-point=bench_sparse_jvp_stencil_d2_compressed benchmark/bench_jvp_structured.fut | tee results/breakdown_stencil_d2_full_cpu.txt
+	futhark bench --backend=multicore --runs=10 --entry-point=bench_sparse_jvp_ba_d2_compressed benchmark/ba/bench_jvp_ba_simple.fut | tee results/breakdown_ba_d2_full_cpu.txt
+	futhark bench --backend=multicore --runs=10 --entry-point=bench_sparse_jvp_ht_d2_compressed benchmark/ht/bench_jvp_ht_simple.fut | tee results/breakdown_ht_d2_full_cpu.txt
+	$(MAKE) bench-coloring
+	$(MAKE) bench-precolored
+
 # section: ADBench comparison benchmarks
 bench-adbench-cpu:
 	futhark bench --backend=multicore --runs=10 benchmark/ba/bench_adbench_ba.fut | tee results/ba_adbench_calculate_jacobian_cpu.txt
