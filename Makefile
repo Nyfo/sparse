@@ -1,14 +1,18 @@
-.PHONY: test test-gpu \
+.PHONY: test test-cpu test-gpu \
+        bench \
         bench-structured-cpu bench-structured-gpu \
         bench-vjp-structured-cpu bench-vjp-structured-gpu \
         bench-ba-cpu bench-ba-gpu \
         bench-ht-cpu bench-ht-gpu \
         bench-coloring bench-precolored \
+        bench-breakdown-cpu \
         bench-adbench-cpu bench-adbench-gpu \
         clean
 
 # section: tests
-test:
+test: test-cpu test-gpu
+
+test-cpu:
 	futhark test test/test_dense_jacobian.fut
 	futhark test test/test_pattern_csr.fut
 	futhark test test/test_partial_d2_coloring.fut
@@ -27,6 +31,21 @@ test-gpu:
 	futhark test --backend=cuda test/test_sparse_jacobian_jvp.fut
 	futhark test --backend=cuda test/test_sparse_jacobian_vjp.fut
 	futhark test --backend=cuda test/test_sparse_jacobian_auto.fut
+
+# section: all benchmarks
+bench:
+	mkdir -p results
+	$(MAKE) bench-structured-cpu
+	$(MAKE) bench-vjp-structured-cpu
+	$(MAKE) bench-ba-cpu
+	$(MAKE) bench-ht-cpu
+	$(MAKE) bench-structured-gpu
+	$(MAKE) bench-vjp-structured-gpu
+	$(MAKE) bench-ba-gpu
+	$(MAKE) bench-ht-gpu
+	$(MAKE) bench-breakdown-cpu
+	$(MAKE) bench-adbench-cpu
+	$(MAKE) bench-adbench-gpu
 
 # section: end-to-end JVP benchmarks
 bench-structured-cpu:
@@ -118,7 +137,6 @@ clean:
 	      benchmark/ba/test_jvp_ba_correctness
 	rm -f benchmark/ht/bench_jvp_ht_simple \
 	      benchmark/ht/bench_jvp_ht_precolored \
-	      benchmark/ht/bench_coloring_ht \
 	      benchmark/ht/color_counts_ht \
 	      benchmark/ht/bench_adbench_ht \
 	      benchmark/ht/test_jvp_ht_correctness
