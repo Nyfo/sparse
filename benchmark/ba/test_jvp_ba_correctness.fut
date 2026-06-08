@@ -1,5 +1,4 @@
 -- End-to-end BA correctness tests for the JVP sparse pipelines.
---
 -- These tests compare the sparse BA pipelines against a dense Jacobian,
 -- restricted to the structurally nonzero entries of the BA sparsity pattern.
 

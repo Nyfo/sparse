@@ -1,6 +1,4 @@
--- Coloring-only benchmarks for the structured benchmark cases.
---
--- These entries use the same CSR sparsity patterns and sizes as
+-- These use the same CSR sparsity patterns and sizes as
 -- bench_jvp_structured.fut, but time only the coloring step.
 
 module D2 = import "../src/partial_d2_coloring"

@@ -1,5 +1,3 @@
--- Tests for dense Jacobian baselines in src/dense_jacobian.fut.
-
 module Dense = import "../src/dense_jacobian"
 
 def approx_eq_mat [m][n] (a:[m][n]f64) (b:[m][n]f64) (eps:f64) : bool =

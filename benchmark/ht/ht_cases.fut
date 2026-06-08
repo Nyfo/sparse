@@ -1,6 +1,4 @@
--- Shared HT benchmark helpers.
---
--- This adapts the GradBench HT objective to the flat-vector interface used by
+-- This adapts the GradBench HT objective to the flat-vector input used by
 -- the sparse Jacobian benchmarks.
 
 module HT = import "./ht_gradbench_original"
@@ -125,16 +123,6 @@ def mk_ht_x (num_obs: i64)
        if i < HT.theta_count then theta[i] else us[i - HT.theta_count])
 
 -- CSR row structure for the HT Jacobian.
---
--- Rows are residual coordinates:
---   row = 3*q + d
---
--- Columns are:
---   0..HT.theta_count-1         : theta parameters
---   HT.theta_count + 2*q        : first barycentric coordinate for observation q
---   HT.theta_count + 2*q + 1    : second barycentric coordinate for observation q
---
--- Each residual row has HT.theta_count+2 structural nonzeros.
 def mk_ht_row_offs (num_obs: i64)
   : [3*num_obs + 1]i64 =
   tabulate (3i64*num_obs + 1i64) (\i ->
@@ -151,9 +139,6 @@ def mk_ht_row_idx (num_obs: i64)
        else HT.theta_count + 2i64*q + (k - HT.theta_count))
 
 -- Column-wise adjacency for the same pattern.
---
--- The first HT.theta_count columns are theta columns and touch every residual
--- row. Each u column touches the three residual rows of one observation.
 def mk_ht_col_offs (num_obs: i64)
   : [HT.theta_count + 2*num_obs + 1]i64 =
   tabulate (HT.theta_count + 2i64*num_obs + 1i64) (\c ->

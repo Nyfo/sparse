@@ -1,13 +1,10 @@
--- Sparse Jacobian via JVP using column coloring from a user-provided
--- sparsity pattern.
---
--- This module exposes three output forms:
+-- This module has three output forms:
 --   1) compressed representation
 --   2) sparse Jacobian in CSR format
 --   3) dense Jacobian
 
 module CSR = import "./pattern_csr"
-module Col = import "./bgpc_vv_coloring"
+module Col = import "./partial_d2_coloring"
 
 def num_colors_of [n] (colors: [n]i64) : i64 =
   if n == 0 then 0i64
@@ -79,7 +76,7 @@ def prepare_jvp_from_csr [m][n]
   (col_idx: []i64)
   =
   let colors =
-    Col.vv_color_cols row_offs row_idx col_offs col_idx
+    Col.partial_d2_color_cols row_offs row_idx col_offs col_idx
 
   in (row_offs, row_idx, col_offs, col_idx, colors)
 

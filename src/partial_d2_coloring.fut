@@ -3,12 +3,12 @@ def neigh (offs:[]i64) (idx:[]i64) (v:i64) : []i64 =
   let e = offs[v+1]
   in idx[s:e]
 
--- seen is UNIQUE (*)
+-- seen is unique (*)
 def mark_forbidden_colors [m][n]
   (row_offs:[m+1]i64) (row_idx:[]i64)
   (col_offs:[n+1]i64) (col_idx:[]i64)
   (colors:[n]i64)
-  (seen:*[n]i64) -- Den her skal åbenbart have *
+  (seen:*[n]i64)
   (stamp:i64)
   (v:i64)
   : *[n]i64 =
@@ -56,7 +56,6 @@ def partial_d2_color_cols_order [m][n]
     loop (colors0, seen0, stamp0, k0)
     while k0 < n do
       let v = order[k0]
-      -- This below leads to so many nested loops, RETHINK THIS!!!
       let seen1 = mark_forbidden_colors row_offs row_idx col_offs col_idx colors0 seen0 stamp0 v
       let c = first_free_color seen1 stamp0
       let colors1 = colors0 with [v] = c

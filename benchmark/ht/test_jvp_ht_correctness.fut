@@ -1,5 +1,4 @@
 -- End-to-end HT correctness tests for the JVP sparse pipelines.
---
 -- These tests compare the sparse HT pipelines against a dense Jacobian,
 -- restricted to the structurally nonzero entries of the HT sparsity pattern.
 

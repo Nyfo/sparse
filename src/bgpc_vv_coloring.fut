@@ -1,6 +1,4 @@
--- BGPC V-V coloring for Jacobian sparsity patterns
---
--- Paper mapping:
+-- How it matches the papers' algorithms:
 --  Algorithm 1 -> vv_color_side_order
 --  Algorithm 4 -> color_workqueue_vertex
 --  Algorithm 5 -> remove_conflicts_vertex
@@ -12,8 +10,6 @@ def bool_to_i64 (b:bool) : i64 =
   if b then 1i64 else 0i64
 
 -- Helper function:
--- Compact xs according to flags using scan + scatter.
--- Keeps xs[i] exactly when flags[i] is true.
 def compact_true_values (xs:[]i64) (flags:[]bool) : []i64 =
   let counts : []i64 = map bool_to_i64 flags
   let pos    : []i64 = scan (+) 0i64 counts
@@ -65,8 +61,7 @@ def first_free_color (seen:[]bool) : i64 =
   in c_final
 
 -- Helper function used by Algorithm 4:
--- First-fit color for one vertex w, using a forbidden-color
--- array built in one neighborhood traversal.
+-- First-fit color for one vertex w, using a forbidden-color array
 def first_fit_color [nets][verts]
   (net_offs:[nets+1]i64) (net_idx:[]i64)
   (vert_offs:[verts+1]i64) (vert_idx:[]i64)
@@ -81,15 +76,6 @@ def first_fit_color [nets][verts]
   in first_free_color seen1
 
 -- Algorithm 4: BGPC-COLORWORKQUEUE-VERTEX
---
--- Input:
---  W = current work queue
---  color_bound = current bound on first free color
---  colors = incomplete coloring with no conflicts among kept vertices
---
--- Output:
---  optimistic coloring after coloring all vertices in W
---  next_color_bound = updated bound based on colors
 def color_workqueue_vertex [nets][verts]
   (net_offs:[nets+1]i64) (net_idx:[]i64)
   (vert_offs:[verts+1]i64) (vert_idx:[]i64)
@@ -148,14 +134,6 @@ def loses_conflict_vertex [nets][verts]
   in lost_final
 
 -- Algorithm 5: BGPC-REMOVECONFLICTS-VERTEX
---
--- Input:
---  W = current work queue
---  colors = optimistic coloring
---
--- Output:
---  Wnext = vertices to recolor next iteration
---  colors = same coloring, but losers reset to -1
 def remove_conflicts_vertex [nets][verts]
   (net_offs:[nets+1]i64) (net_idx:[]i64)
   (vert_offs:[verts+1]i64) (vert_idx:[]i64)
@@ -178,9 +156,9 @@ def remove_conflicts_vertex [nets][verts]
 
 -- Algorithm 1: GREEDYGRAPHCOLORING
 --
--- Repeatedly as shown in the algorithm 1 pseudocode:
---  1) color current work queue optimistically
---  2) remove conflicts
+-- As shown in the algorithm 1 pseudocode:
+-- 1) color current work queue optimistically
+-- 2) remove conflicts
 -- until W is empty
 def vv_color_side_order [nets][verts]
   (net_offs:[nets+1]i64) (net_idx:[]i64)
@@ -190,7 +168,6 @@ def vv_color_side_order [nets][verts]
   let colors0      : [verts]i64 = replicate verts (-1i64)
   let color_bound0 : i64        = 1i64
 
-  -- Turn fixed-size order into existential work queue.
   let W0 : []i64 = filter (\_ -> true) order
 
   let (colors_final, _W_final, _color_bound_final) =

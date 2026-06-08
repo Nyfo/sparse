@@ -1,4 +1,3 @@
--- benchmark/bench_cases.fut
 -- Shared benchmark cases (helpers + test functions + patterns).
 
 module CSR = import "../src/pattern_csr"
@@ -6,7 +5,7 @@ module Col = import "../src/partial_d2_coloring"
 
 -- Reused the randomizer from my DPP project about vtrees
 def rand_vec [n] (seed:i64) : [n]f64 =
-  -- hash function (based on MurmurHash3), reused from earlier DPP project.
+  -- hash function (based on MurmurHash3), reused from earlier DPP project: https://github.com/armadi1809/vtree/blob/main/benchmarks/benchmark_operations.fut
   let hash (x: u64) : u64 =
     let x = x ^ (x >> 30)
     let x = x * 0xbf58476d1ce4e5b9u64

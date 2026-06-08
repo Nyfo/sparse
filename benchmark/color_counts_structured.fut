@@ -1,5 +1,3 @@
--- Color counts for the structured benchmark cases.
---
 -- color_counts_structured reports JVP column-color counts.
 -- color_counts_structured_vjp reports VJP row-color counts.
 -- In both outputs, each case is reported as: D2, BGPC.

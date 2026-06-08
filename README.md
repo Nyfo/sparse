@@ -1,68 +1,55 @@
 # sparse
 
-This repository contains my bachelor thesis project on sparse Jacobian computation in Futhark.
+Bachelor thesis project on sparse Jacobian computation in Futhark.
 
-The project looks at how to compute Jacobians more efficiently when the sparsity pattern is known in advance. The main comparison is between dense Jacobian computation and sparse, coloring-based approaches that reduce the number of JVP or VJP evaluations.
+The project computes Jacobians from a known sparsity pattern using graph coloring and compressed JVP/VJP evaluations. The benchmarks compare dense baselines, a greedy partial distance-2 coloring pipeline, and a BGPC-based coloring pipeline.
 
-## Project Structure
+## Structure
 
-- `src/`: core library code
-- `test/`: tests for the library modules
-- `benchmark/`: benchmark programs used during the thesis work
-- `results/`: saved benchmark outputs and short notes
+- `src/`: library implementation
+- `test/`: correctness tests
+- `benchmark/`: benchmark programs
+- `results/`: benchmark output notes
 - `lib/`: external Futhark dependencies
+- `futhark.pkg`: Futhark package file
+- `Makefile`: test and benchmark commands
 
-## `src/` Overview
+## Main Modules
 
-- `src/dense_jacobian.fut`
-  Dense reference implementations based on repeated JVP and VJP calls. This is mainly used as a baseline and for correctness checking.
+- `src/dense_jacobian.fut`: dense JVP/VJP baselines
+- `src/pattern_csr.fut`: CSR construction from sparsity patterns
+- `src/partial_d2_coloring.fut`: greedy partial distance-2 coloring
+- `src/bgpc_vv_coloring.fut`: BGPC-style coloring
+- `src/sparse_jacobian_jvp.fut`: sparse Jacobian computation using JVPs
+- `src/sparse_jacobian_vjp.fut`: sparse Jacobian computation using VJPs
+- `src/sparse_jacobian_auto.fut`: direction-selecting wrapper
 
-- `src/pattern_csr.fut`
-  Utilities for converting dense boolean sparsity patterns into CSR-style sparse representations. This is the connection between a dense pattern description and the sparse pipelines.
+## Benchmarks
 
-- `src/bgpc_vv_coloring.fut`
-  A BGPC-style coloring implementation for bipartite row/column sparsity graphs. This is the main GPU-oriented coloring approach in the project.
+The benchmarks cover:
 
-- `src/partial_d2_coloring.fut`
-  A greedy partial distance-2 coloring implementation. This is kept as an alternative coloring strategy and as an important comparison point in the experiments.
+- structured `Banded5` and `Stencil` problems
+- `BA` bundle adjustment
+- `HT` hand tracking
+- coloring and precolored pipeline breakdowns
+- ADBench `calculate_jacobian` comparisons
 
-- `src/sparse_jacobian_jvp.fut`
-  Sparse Jacobian construction using compressed forward-mode evaluations. It supports compressed output, CSR output, and dense reconstruction.
+## Commands
 
-- `src/sparse_jacobian_vjp.fut`
-  Sparse Jacobian construction using compressed reverse-mode evaluations. Like the JVP module, it supports compressed output, CSR output, and dense reconstruction.
+Run all tests:
 
-## Benchmark Structure
+    make test
 
-The benchmark folder is currently split into two main parts:
+Run CPU-only tests:
 
-- structured benchmarks, mainly based on `banded5` and `stencil`, used for the main dense-vs-sparse and CPU-vs-GPU comparisons
-- an irregular benchmark, `spiky`, used more as a deeper stress test and pipeline breakdown case
+    make test-cpu
 
-The benchmark setup is still being refined, so the most stable part of the repository right now is still the `src/` library together with the tests and saved results.
+Run GPU-only tests:
 
-## Basic Commands
+    make test-gpu
 
-Run CPU tests:
+Run all benchmark groups:
 
-```bash
-make test
-```
+    make bench
 
-Run CUDA tests:
-
-```bash
-make test-gpu
-```
-
-Run CPU benchmarks:
-
-```bash
-make bench
-```
-
-Run CUDA benchmarks:
-
-```bash
-make bench-gpu
-```
+CUDA tests and GPU benchmarks require CUDA and an NVIDIA GPU.

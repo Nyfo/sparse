@@ -1,6 +1,4 @@
--- Structured JVP benchmarks with precomputed D2 colors.
---
--- These entries separate compressed JVP evaluation and CSR reconstruction from
+-- These separate compressed JVP evaluation and CSR reconstruction from
 -- the coloring step.
 
 module Sparse = import "../src/sparse_jacobian_jvp"

@@ -1,7 +1,4 @@
--- Shared BA benchmark helpers.
---
--- This adapts the GradBench BA objective to the flat-vector interface used by
--- the sparse Jacobian benchmarks.
+-- Shared BA benchmark setup.
 
 module CSR = import "../../src/pattern_csr"
 module BA = import "./ba_gradbench_original"

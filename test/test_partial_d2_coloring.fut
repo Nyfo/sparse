@@ -1,5 +1,3 @@
--- Tests for partial distance-2 coloring.
-
 module CSR = import "../src/pattern_csr"
 module Col = import "../src/partial_d2_coloring"
 

@@ -1,5 +1,3 @@
--- Tests for BGPC vertex-vertex coloring.
-
 module CSR = import "../src/pattern_csr"
 module Col = import "../src/bgpc_vv_coloring"
 

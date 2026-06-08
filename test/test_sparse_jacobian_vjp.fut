@@ -1,5 +1,3 @@
--- Tests for compressed VJP Jacobian using row coloring.
-
 module Dense  = import "../src/dense_jacobian"
 module Sparse = import "../src/sparse_jacobian_vjp"
 module CSR    = import "../src/pattern_csr"

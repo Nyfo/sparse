@@ -1,5 +1,3 @@
--- Dense Jacobian benchmarks on the banded5 case.
-
 module DJ    = import "../src/dense_jacobian"
 module Cases = import "./bench_cases"
 

@@ -1,5 +1,3 @@
--- Tests for automatic sparse Jacobian mode selection (JVP vs VJP).
-
 module Dense = import "../src/dense_jacobian"
 module Auto  = import "../src/sparse_jacobian_auto"
 module CSR   = import "../src/pattern_csr"

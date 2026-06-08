@@ -1,5 +1,4 @@
 -- HT JVP benchmarks with precomputed D2 colors.
---
 -- These entries separate compressed JVP evaluation and CSR reconstruction from
 -- the coloring step.
 

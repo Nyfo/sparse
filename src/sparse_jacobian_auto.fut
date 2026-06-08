@@ -1,5 +1,5 @@
 module CSR = import "./pattern_csr"
-module Col = import "./bgpc_vv_coloring"
+module Col = import "./partial_d2_coloring"
 module JVP = import "./sparse_jacobian_jvp"
 module VJP = import "./sparse_jacobian_vjp"
 
@@ -17,10 +17,10 @@ def prepare_jac_auto_from_csr [m][n]
   : ([m+1]i64, []i64, [n+1]i64, []i64,
      [n]i64, [m]i64, i64, i64, bool) =
   let col_colors =
-    Col.vv_color_cols row_offs row_idx col_offs col_idx
+    Col.partial_d2_color_cols row_offs row_idx col_offs col_idx
 
   let row_colors =
-    Col.vv_color_rows row_offs row_idx col_offs col_idx
+    Col.partial_d2_color_rows row_offs row_idx col_offs col_idx
 
   let num_col_colors = num_colors_of col_colors
   let num_row_colors = num_colors_of row_colors

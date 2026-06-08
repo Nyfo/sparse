@@ -1,5 +1,3 @@
--- Tests for compressed JVP Jacobian using coloring.
-
 module Dense  = import "../src/dense_jacobian"
 module Sparse = import "../src/sparse_jacobian_jvp"
 module CSR    = import "../src/pattern_csr"
