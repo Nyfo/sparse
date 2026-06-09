@@ -43,7 +43,8 @@ bench:
 	$(MAKE) bench-vjp-structured-gpu
 	$(MAKE) bench-ba-gpu
 	$(MAKE) bench-ht-gpu
-	$(MAKE) bench-breakdown-cpu
+	$(MAKE) bench-coloring
+	$(MAKE) bench-precolored
 	$(MAKE) bench-adbench-cpu
 	$(MAKE) bench-adbench-gpu
 

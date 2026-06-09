@@ -3,8 +3,6 @@
 --  Algorithm 4 -> color_workqueue_vertex
 --  Algorithm 5 -> remove_conflicts_vertex
 
-import "../lib/github.com/diku-dk/segmented/segmented"
-
 -- Helper function:
 def bool_to_i64 (b:bool) : i64 =
   if b then 1i64 else 0i64
