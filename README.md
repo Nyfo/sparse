@@ -52,7 +52,7 @@ The benchmarks cover:
 - coloring and precolored pipeline breakdowns
 - ADBench `calculate_jacobian` comparisons
 
-## Commands:
+## Commands to run tests and benchmarks:
 
 Run all tests. This runs both CPU tests and CUDA tests:
 
