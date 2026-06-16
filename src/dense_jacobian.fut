@@ -7,7 +7,7 @@ def onehot_f64 [n] (i:i64) : [n]f64 =
 -- Dense via JVP (forward mode) with n calls
 def jac_dense_jvp [m][n] (f:[n]f64 -> [m]f64) (x:[n]f64) : [m][n]f64 =
   let cols : [n][m]f64 = map (\j -> jvp f x (onehot_f64 j)) (iota n)
-  in transpose cols
+  in transpose cols -- So we get [m][n]f64 output instead of [n][m]f64
 
 -- Dense via VJP (reverse mode) with m calls
 def jac_dense_vjp [m][n] (f:[n]f64 -> [m]f64) (x:[n]f64) : [m][n]f64 =

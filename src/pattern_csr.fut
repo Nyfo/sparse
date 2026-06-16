@@ -8,15 +8,15 @@ def counts_to_offs [m] (counts:[m]i64) : [m+1]i64 =
   in replicate (m+1) 0i64 with [1:m+1] = pref
 
 def csr_rows_from_pattern [m][n] (pat:[m][n]bool) : ([m+1]i64, []i64) =
-  let counts : [m]i64 = map count_true pat
+  let counts : [m]i64 = map count_true pat -- Work O(m*n)
   let offs   : [m+1]i64 = counts_to_offs counts
 
   let mask : [m*n]bool = flatten pat
 
   let cols_flat : [m*n]i64 = map (\k -> k % n) (iota (m*n))
 
-  let pairs : [m*n](bool, i64) = map2 (\b c -> (b, c)) mask cols_flat
-  let kept  : [](bool, i64)    = filter (\(b, _) -> b) pairs
+  let pairs : [m*n](bool, i64) = map2 (\b c -> (b, c)) mask cols_flat -- Space O(m*n)
+  let kept  : [](bool, i64)    = filter (\(b, _) -> b) pairs -- Span O(log(m*n))
   let idx   : []i64            = map (\(_, c) -> c) kept
 
   in (offs, idx)

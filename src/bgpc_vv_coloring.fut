@@ -21,9 +21,9 @@ def compact_true_values (xs:[]i64) (flags:[]bool) : []i64 =
     filter (\(_, (_, keep)) -> keep) tagged
 
   let dst : []i64 = map (\(_, (p, _)) -> p - 1i64) kept
-  let vals: []i64 = map (\(x, _) -> x) kept
+  let vals: []i64 = map (\(x, _) -> x) kept -- Could just have returned this
 
-  let out0 : []i64 = replicate out_sz 0i64
+  let out0 : []i64 = replicate out_sz 0i64 -- Somewhat redundant
   in scatter out0 dst vals
 
 -- Helper function used by Algorithm 4:
@@ -67,7 +67,7 @@ def first_fit_color [nets][verts]
   (color_bound:i64)
   (w:i64)
   : i64 =
-  let seen0 : []bool = replicate color_bound false
+  let seen0 : []bool = replicate color_bound false -- Local forbidden-color array for this vertex, this contributes O(|W| * b)
   let seen1 =
     mark_forbidden_colors_vertex
       net_offs net_idx vert_offs vert_idx colors seen0 w
@@ -91,7 +91,7 @@ def color_workqueue_vertex [nets][verts]
   let next_color_bound =
     if max_tent < 0i64
     then color_bound
-    else i64.max color_bound (max_tent + 2i64)
+    else i64.max color_bound (max_tent + 2i64) -- first_free_color kan også vælge næste farve efter alle de eksisterende, så derfor plus 2 for at tage hensyn til 0 og næste ledige farve
 
   -- Safe because vertices in W are unique.
   let colors' = scatter colors W tentative

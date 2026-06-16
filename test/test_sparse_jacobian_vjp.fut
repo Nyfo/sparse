@@ -223,3 +223,28 @@ entry test_vjp_csr_from_csr_ex4_matches_dense (x:[6]f64) : bool =
     Sparse.csr_to_dense out_row_offs out_row_idx vals
 
   in approx_eq_mat js jd eps
+
+-- CSR-input compressed API: compressed output reconstructs to the masked dense Jacobian.
+-- ==
+-- entry: test_vjp_compressed_from_csr_ex4_matches_dense
+-- input  { [1.5f64, -2.0f64, 0.5f64, 7.0f64, 3.0f64, -4.0f64] }
+-- output { true }
+entry test_vjp_compressed_from_csr_ex4_matches_dense (x:[6]f64) : bool =
+  let eps = 1e-9f64
+
+  let jd =
+    mask_with_pattern pat_ex4 (Dense.jac_dense_vjp f_ex4 x)
+
+  let ((row_offs, row_idx), (col_offs, col_idx)) =
+    CSR.csr_bipartite_from_pattern pat_ex4
+
+  let ((out_row_offs, out_row_idx), (_out_col_offs, _out_col_idx), row_colors, ys) =
+    Sparse.jac_vjp_compressed_from_csr f_ex4 row_offs row_idx col_offs col_idx x
+
+  let vals =
+    Sparse.compressed_to_csr_vals out_row_offs out_row_idx row_colors ys
+
+  let js =
+    Sparse.csr_to_dense out_row_offs out_row_idx vals
+
+  in approx_eq_mat js jd eps

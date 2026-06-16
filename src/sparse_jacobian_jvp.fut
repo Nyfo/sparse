@@ -158,6 +158,19 @@ def jac_jvp_dense [m][n]
 
 -- -------------- Full JVP pipeline from CSR pattern --------------
 
+-- Compressed output from an already available CSR sparsity pattern.
+def jac_jvp_compressed_from_csr [m][n]
+  (f: [n]f64 -> [m]f64)
+  (row_offs: [m+1]i64)
+  (row_idx: []i64)
+  (col_offs: [n+1]i64)
+  (col_idx: []i64)
+  (x: [n]f64)
+  =
+  let prepared =
+    prepare_jvp_from_csr row_offs row_idx col_offs col_idx
+  in eval_prepared_jvp_compressed f prepared x
+
 -- Sparse / CSR output from an already available CSR sparsity pattern.
 def jac_jvp_csr_from_csr [m][n]
   (f: [n]f64 -> [m]f64)
