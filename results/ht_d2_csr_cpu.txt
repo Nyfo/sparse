@@ -1,9 +1,0 @@
-Compiling benchmark/ht/bench_jvp_ht_simple.fut...
-Reporting arithmetic mean runtime of at least 10 runs for each dataset (min 0.5s).
-More runs automatically performed for up to 300s to ensure accurate measurement.
-
-benchmark/ht/bench_jvp_ht_simple.fut:bench_sparse_jvp_ht_d2_csr (no tuning file):
-mk_ht_csr_test 22i32 512i32 2048i32:        24686μs (95% CI: [   24101.7,    25209.7])
-mk_ht_csr_test 22i32 1024i32 4096i32:       32250μs (95% CI: [   31278.0,    33574.6])
-mk_ht_csr_test 22i32 2048i32 8192i32:       47380μs (95% CI: [   46763.4,    48378.1])
-mk_ht_csr_test 22i32 4096i32 16384i32:      98632μs (95% CI: [   97186.3,    99671.4])

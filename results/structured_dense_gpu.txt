@@ -1,8 +1,0 @@
-Compiling benchmark/bench_jvp_structured.fut...
-Reporting arithmetic mean runtime of at least 10 runs for each dataset (min 0.5s).
-More runs automatically performed for up to 300s to ensure accurate measurement.
-
-benchmark/bench_jvp_structured.fut:bench_dense_jvp_stencil (no tuning file):
-mk_stencil_csr_test 64i32 64i32:           1534μs (95% CI: [    1532.9,     1535.1])
-mk_stencil_csr_test 96i32 96i32:           7367μs (95% CI: [    7356.3,     7375.0])
-mk_stencil_csr_test 128i32 128i32:        25147μs (95% CI: [   25093.4,    25222.8])

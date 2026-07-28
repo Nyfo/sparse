@@ -1,8 +1,0 @@
-Compiling benchmark/bench_vjp_structured.fut...
-Reporting arithmetic mean runtime of at least 10 runs for each dataset (min 0.5s).
-More runs automatically performed for up to 300s to ensure accurate measurement.
-
-benchmark/bench_vjp_structured.fut:bench_dense_vjp_banded5 (no tuning file):
-mk_banded_csr_test 512i32 16384i32:         302μs (95% CI: [     295.1,      310.2])
-mk_banded_csr_test 1024i32 32768i32:        726μs (95% CI: [     712.2,      744.3])
-mk_banded_csr_test 2048i32 65536i32:     909597μs (95% CI: [  900109.5,   933938.6])
